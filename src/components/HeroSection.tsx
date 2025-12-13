@@ -1,58 +1,81 @@
 import { Button } from "@/components/ui/button";
-import FloatingShapes from "./FloatingShapes";
-import { ArrowDown, Sparkles } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import heroImage from "@/assets/hero-wedding.jpg";
 
 const HeroSection = () => {
-  const scrollToWork = () => {
-    document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToServices = () => {
+    document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4">
-      <FloatingShapes />
-      
-      <div className="relative z-10 text-center max-w-4xl mx-auto">
-        <div className="inline-flex items-center gap-2 bg-card/80 backdrop-blur-sm px-4 py-2 rounded-full mb-8 animate-fade-in-up border border-border">
-          <Sparkles className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-muted-foreground">Available for new projects</span>
-        </div>
-        
-        <h1 
-          className="text-5xl md:text-7xl lg:text-8xl font-bold font-display mb-6 animate-fade-in-up"
-          style={{ animationDelay: '0.1s' }}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-foreground/30 via-foreground/20 to-foreground/60" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
+        <p
+          className="text-gold-light tracking-[0.3em] uppercase text-sm md:text-base mb-6 animate-fade-in-up font-medium"
+          style={{ animationDelay: "0.2s" }}
         >
-          <span className="block">Hi, I'm</span>
-          <span className="text-gradient">Alex Creative</span>
-        </h1>
-        
-        <p 
-          className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in-up"
-          style={{ animationDelay: '0.2s' }}
-        >
-          A designer & developer who loves turning wild ideas into 
-          <span className="text-primary font-semibold"> playful digital experiences</span>
+          Luxury Destinations & Experiences
         </p>
-        
-        <div 
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up"
-          style={{ animationDelay: '0.3s' }}
+
+        <h1
+          className="font-display text-5xl md:text-7xl lg:text-8xl text-card font-semibold mb-6 animate-fade-in-up leading-tight"
+          style={{ animationDelay: "0.4s" }}
         >
-          <Button variant="hero" size="xl" onClick={scrollToWork}>
-            See My Work
+          Sacred Escapes.
+          <br />
+          <span className="italic font-normal">Soulful Moments.</span>
+        </h1>
+
+        <p
+          className="text-card/90 text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-fade-in-up font-light leading-relaxed"
+          style={{ animationDelay: "0.6s" }}
+        >
+          Create unforgettable memories with our bespoke beach weddings,
+          transformative spiritual retreats, and curated luxury travel
+          experiences.
+        </p>
+
+        <div
+          className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up"
+          style={{ animationDelay: "0.8s" }}
+        >
+          <Button
+            variant="luxury"
+            size="xl"
+            onClick={() =>
+              document
+                .getElementById("contact")
+                ?.scrollIntoView({ behavior: "smooth" })
+            }
+          >
+            Start Your Journey
           </Button>
-          <Button variant="outline" size="xl">
-            Let's Talk
+          <Button
+            variant="luxury-white"
+            size="xl"
+            onClick={scrollToServices}
+          >
+            Explore Services
           </Button>
         </div>
       </div>
-      
-      {/* Scroll indicator */}
-      <button 
-        onClick={scrollToWork}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce-soft cursor-pointer hover:text-primary transition-colors"
-        aria-label="Scroll to work section"
+
+      {/* Scroll Indicator */}
+      <button
+        onClick={scrollToServices}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-card/80 hover:text-card transition-colors animate-bounce cursor-pointer"
+        aria-label="Scroll down"
       >
-        <ArrowDown className="w-8 h-8 text-muted-foreground" />
+        <ChevronDown size={32} />
       </button>
     </section>
   );

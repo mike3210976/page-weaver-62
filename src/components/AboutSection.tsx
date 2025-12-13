@@ -1,51 +1,94 @@
-import { Palette, Code, Lightbulb, Coffee } from "lucide-react";
-
-const skills = [
-  { icon: Palette, label: "Design", description: "UI/UX, Branding, Illustration" },
-  { icon: Code, label: "Development", description: "React, TypeScript, CSS" },
-  { icon: Lightbulb, label: "Strategy", description: "Problem solving, Research" },
-  { icon: Coffee, label: "Collaboration", description: "Remote-friendly, Async" },
-];
+import maldivesImage from "@/assets/maldives.jpg";
+import retreatImage from "@/assets/retreat.jpg";
+import romanticImage from "@/assets/romantic-escape.jpg";
 
 const AboutSection = () => {
   return (
-    <section className="py-24 px-4 bg-card relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-secondary to-accent" />
-      
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left side - About text */}
-          <div className="space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold font-display">
-              About <span className="text-primary">Me</span>
-            </h2>
-            <div className="space-y-4 text-lg text-muted-foreground">
+    <section id="about" className="py-24 px-6 bg-card">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Text Content */}
+          <div className="space-y-8">
+            <div>
+              <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
+                Our Story
+              </p>
+              <h2 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight">
+                Creating Moments That Stay in Your{" "}
+                <span className="italic font-normal text-primary">Heart</span>{" "}
+                Forever
+              </h2>
+            </div>
+
+            <div className="space-y-6 text-muted-foreground leading-relaxed">
               <p>
-                I believe good design should make you smile. With 5+ years of experience 
-                crafting digital products, I bring creativity and technical skills together 
-                to build things people actually enjoy using.
+                At Sacred Escapes, we believe that life&apos;s most precious
+                moments deserve extraordinary settings. Our passion is weaving
+                together dream destinations, spiritual awakening, and romantic
+                celebrations into experiences that transcend the ordinary.
               </p>
               <p>
-                When I'm not pushing pixels or writing code, you'll find me sketching new 
-                ideas, exploring art museums, or trying to perfect my latte art (still working on that one).
+                From the crystal-clear waters of the Maldives to the romantic
+                coastlines of Italy, we curate journeys that speak to the soul.
+                Whether you&apos;re dreaming of an intimate beach wedding, a
+                transformative wellness retreat, or an exotic adventure with
+                your beloved, we transform your vision into reality.
               </p>
             </div>
-          </div>
-          
-          {/* Right side - Skills grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {skills.map((skill, index) => (
-              <div 
-                key={skill.label}
-                className="group bg-background p-6 rounded-2xl border-2 border-border hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <skill.icon className="w-10 h-10 text-primary mb-4 group-hover:scale-110 transition-transform" />
-                <h3 className="font-display font-bold text-lg mb-1">{skill.label}</h3>
-                <p className="text-sm text-muted-foreground">{skill.description}</p>
+
+            <div className="flex gap-12 pt-4">
+              <div>
+                <p className="font-display text-4xl font-semibold text-primary">
+                  500+
+                </p>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                  Dream Weddings
+                </p>
               </div>
-            ))}
+              <div>
+                <p className="font-display text-4xl font-semibold text-primary">
+                  50+
+                </p>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                  Destinations
+                </p>
+              </div>
+              <div>
+                <p className="font-display text-4xl font-semibold text-primary">
+                  15+
+                </p>
+                <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                  Years Experience
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Image Collage */}
+          <div className="relative grid grid-cols-2 gap-4 h-[500px]">
+            <div className="relative row-span-2">
+              <img
+                src={maldivesImage}
+                alt="Luxury overwater bungalow in Maldives"
+                className="w-full h-full object-cover rounded-sm shadow-xl"
+              />
+            </div>
+            <div className="relative">
+              <img
+                src={retreatImage}
+                alt="Peaceful meditation retreat at sunrise"
+                className="w-full h-full object-cover rounded-sm shadow-xl"
+              />
+            </div>
+            <div className="relative">
+              <img
+                src={romanticImage}
+                alt="Romantic couple on beach at sunset"
+                className="w-full h-full object-cover rounded-sm shadow-xl"
+              />
+            </div>
+            {/* Decorative element */}
+            <div className="absolute -bottom-6 -left-6 w-32 h-32 border-2 border-primary -z-10" />
           </div>
         </div>
       </div>

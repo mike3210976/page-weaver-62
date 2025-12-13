@@ -4,47 +4,48 @@
 
 @layer base {
   :root {
-    /* Playful & Creative Palette */
-    --background: 45 33% 97%;
-    --foreground: 240 20% 15%;
+    /* Elegant Luxury Palette */
+    --background: 40 30% 98%;
+    --foreground: 220 20% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 20% 15%;
+    --card-foreground: 220 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 20% 15%;
+    --popover-foreground: 220 20% 15%;
 
-    /* Coral/Peach Primary */
-    --primary: 12 85% 65%;
+    /* Gold Primary */
+    --primary: 38 70% 50%;
     --primary-foreground: 0 0% 100%;
 
-    /* Teal Secondary */
-    --secondary: 175 60% 45%;
-    --secondary-foreground: 0 0% 100%;
+    /* Pastel Blue Secondary */
+    --secondary: 200 40% 70%;
+    --secondary-foreground: 220 20% 15%;
 
-    /* Soft lavender muted */
-    --muted: 260 30% 94%;
-    --muted-foreground: 240 10% 45%;
+    /* Sand Muted */
+    --muted: 35 25% 92%;
+    --muted-foreground: 220 10% 45%;
 
-    /* Yellow accent */
-    --accent: 45 95% 60%;
-    --accent-foreground: 240 20% 15%;
+    /* Soft Gold Accent */
+    --accent: 38 60% 85%;
+    --accent-foreground: 220 20% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 10% 88%;
-    --input: 240 10% 88%;
-    --ring: 12 85% 65%;
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 38 70% 50%;
 
-    --radius: 1rem;
+    --radius: 0.5rem;
 
-    /* Custom colors for shapes */
-    --coral: 12 85% 65%;
-    --teal: 175 60% 45%;
-    --yellow: 45 95% 60%;
-    --lavender: 260 60% 75%;
-    --mint: 165 50% 80%;
+    /* Custom luxury colors */
+    --gold: 38 70% 50%;
+    --gold-light: 38 60% 85%;
+    --ocean: 200 40% 70%;
+    --ocean-deep: 200 50% 45%;
+    --sand: 35 30% 85%;
+    --cream: 40 30% 96%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -57,33 +58,33 @@
   }
 
   .dark {
-    --background: 240 15% 10%;
-    --foreground: 45 33% 97%;
+    --background: 220 20% 10%;
+    --foreground: 40 30% 95%;
 
-    --card: 240 15% 13%;
-    --card-foreground: 45 33% 97%;
+    --card: 220 20% 13%;
+    --card-foreground: 40 30% 95%;
 
-    --popover: 240 15% 13%;
-    --popover-foreground: 45 33% 97%;
+    --popover: 220 20% 13%;
+    --popover-foreground: 40 30% 95%;
 
-    --primary: 12 85% 65%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 38 70% 55%;
+    --primary-foreground: 220 20% 10%;
 
-    --secondary: 175 60% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 200 40% 35%;
+    --secondary-foreground: 40 30% 95%;
 
-    --muted: 240 10% 20%;
-    --muted-foreground: 240 10% 70%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 45 95% 60%;
-    --accent-foreground: 240 20% 15%;
+    --accent: 38 50% 25%;
+    --accent-foreground: 40 30% 95%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 10% 25%;
-    --input: 240 10% 25%;
-    --ring: 12 85% 65%;
+    --border: 220 15% 25%;
+    --input: 220 15% 25%;
+    --ring: 38 70% 55%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -111,27 +112,11 @@
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent;
+  .text-gold-gradient {
+    @apply bg-gradient-to-r from-primary via-yellow-600 to-primary bg-clip-text text-transparent;
   }
 
-  .shape-coral {
-    background-color: hsl(var(--coral));
-  }
-
-  .shape-teal {
-    background-color: hsl(var(--teal));
-  }
-
-  .shape-yellow {
-    background-color: hsl(var(--yellow));
-  }
-
-  .shape-lavender {
-    background-color: hsl(var(--lavender));
-  }
-
-  .shape-mint {
-    background-color: hsl(var(--mint));
+  .bg-luxury-gradient {
+    background: linear-gradient(135deg, hsl(var(--cream)) 0%, hsl(var(--sand)) 100%);
   }
 }

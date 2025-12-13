@@ -1,41 +1,291 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Mail, ArrowRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Send, Mail, Phone, MapPin } from "lucide-react";
+import { z } from "zod";
+
+const contactSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters"),
+  email: z
+    .string()
+    .trim()
+    .email("Please enter a valid email")
+    .max(255, "Email must be less than 255 characters"),
+  service: z.string().optional(),
+  destination: z.string().max(100).optional(),
+  date: z.string().optional(),
+  message: z
+    .string()
+    .trim()
+    .min(1, "Message is required")
+    .max(1000, "Message must be less than 1000 characters"),
+});
 
 const ContactSection = () => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    service: "",
+    destination: "",
+    date: "",
+    message: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = contactSchema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    toast({
+      title: "Thank you for reaching out!",
+      description:
+        "We have received your inquiry and will contact you within 24 hours.",
+    });
+
+    setFormData({
+      name: "",
+      email: "",
+      service: "",
+      destination: "",
+      date: "",
+      message: "",
+    });
+  };
+
   return (
-    <section className="py-24 px-4 bg-foreground text-background relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute top-10 left-10 w-24 h-24 rounded-full border-4 border-primary/30 animate-spin-slow" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 rounded-2xl bg-secondary/20 rotate-12 animate-float" />
-      <div className="absolute top-1/2 left-1/4 w-16 h-16 rounded-full bg-accent/20 animate-bounce-soft" />
-      
-      <div className="max-w-4xl mx-auto text-center relative z-10">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-8">
-          <Mail className="w-10 h-10 text-primary" />
+    <section id="contact" className="py-24 px-6 bg-background">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-16">
+          {/* Left side - Info */}
+          <div className="space-y-8">
+            <div>
+              <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
+                Get in Touch
+              </p>
+              <h2 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-6">
+                Make Your Dreams{" "}
+                <span className="italic font-normal">Come True</span>
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Ready to begin your journey? Share your vision with us, and our
+                team will craft a personalized experience just for you.
+              </p>
+            </div>
+
+            <div className="space-y-6 pt-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                    Email
+                  </p>
+                  <a
+                    href="mailto:hello@sacredescapes.com"
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    hello@sacredescapes.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
+                  <Phone className="w-5 h-5 text-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                    Phone
+                  </p>
+                  <a
+                    href="tel:+18001234567"
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    +1 (800) 123-4567
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
+                  <MapPin className="w-5 h-5 text-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground uppercase tracking-wide">
+                    Office
+                  </p>
+                  <p className="text-foreground">Los Angeles, California</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side - Form */}
+          <div className="bg-card p-8 md:p-10 rounded-sm shadow-xl border border-border">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
+                    Your Name *
+                  </label>
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John & Jane Smith"
+                    className={errors.name ? "border-destructive" : ""}
+                  />
+                  {errors.name && (
+                    <p className="text-destructive text-sm mt-1">
+                      {errors.name}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
+                    Email Address *
+                  </label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="hello@example.com"
+                    className={errors.email ? "border-destructive" : ""}
+                  />
+                  {errors.email && (
+                    <p className="text-destructive text-sm mt-1">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <label
+                    htmlFor="service"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
+                    Desired Service
+                  </label>
+                  <select
+                    id="service"
+                    name="service"
+                    value={formData.service}
+                    onChange={handleChange}
+                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="">Select a service</option>
+                    <option value="beach-wedding">Beach Wedding</option>
+                    <option value="spiritual-retreat">Spiritual Retreat</option>
+                    <option value="exotic-travel">Exotic Travel</option>
+                    <option value="romantic-escape">Romantic Escape</option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="destination"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
+                    Dream Destination
+                  </label>
+                  <Input
+                    id="destination"
+                    name="destination"
+                    value={formData.destination}
+                    onChange={handleChange}
+                    placeholder="e.g., Maldives, Bali"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="date"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
+                  Preferred Date
+                </label>
+                <Input
+                  id="date"
+                  name="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
+                  Tell Us About Your Dream *
+                </label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Share your vision, special requests, or any questions..."
+                  rows={4}
+                  className={errors.message ? "border-destructive" : ""}
+                />
+                {errors.message && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.message}
+                  </p>
+                )}
+              </div>
+
+              <Button variant="luxury" size="lg" className="w-full" type="submit">
+                <Send className="w-4 h-4 mr-2" />
+                Make Your Dreams Come True
+              </Button>
+            </form>
+          </div>
         </div>
-        
-        <h2 className="text-4xl md:text-6xl font-bold font-display mb-6">
-          Let's create something <span className="text-primary">amazing</span> together
-        </h2>
-        
-        <p className="text-xl text-background/70 mb-10 max-w-2xl mx-auto">
-          Got a project in mind? I'd love to hear about it. Drop me a message and 
-          let's make magic happen!
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button variant="playful" size="xl" className="group">
-            Say Hello
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </div>
-        
-        <p className="mt-8 text-background/50">
-          or email me at{" "}
-          <a href="mailto:hello@alexcreative.com" className="text-primary hover:underline font-medium">
-            hello@alexcreative.com
-          </a>
-        </p>
       </div>
     </section>
   );
