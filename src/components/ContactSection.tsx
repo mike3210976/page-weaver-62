@@ -113,10 +113,10 @@ const ContactSection = () => {
                     Email
                   </p>
                   <a
-                    href="mailto:hello@sacredescapes.com"
+                    href="mailto:horvatsla@gmail.com"
                     className="text-foreground hover:text-primary transition-colors"
                   >
-                    hello@sacredescapes.com
+                    horvatsla@gmail.com
                   </a>
                 </div>
               </div>
@@ -130,10 +130,10 @@ const ContactSection = () => {
                     Phone
                   </p>
                   <a
-                    href="tel:+18001234567"
+                    href="tel:+38641611342"
                     className="text-foreground hover:text-primary transition-colors"
                   >
-                    +1 (800) 123-4567
+                    +386 41 611 342
                   </a>
                 </div>
               </div>
@@ -144,9 +144,9 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground uppercase tracking-wide">
-                    Office
+                    Contact Person
                   </p>
-                  <p className="text-foreground">Los Angeles, California</p>
+                  <p className="text-foreground">Slađana Horvat</p>
                 </div>
               </div>
             </div>
