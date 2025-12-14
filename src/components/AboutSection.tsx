@@ -28,39 +28,20 @@ const AboutSection = () => {
                 celebrations into experiences that transcend the ordinary.
               </p>
               <p>
-                From the crystal-clear waters of the Maldives to the romantic
-                coastlines of Italy, we curate journeys that speak to the soul.
-                Whether you&apos;re dreaming of an intimate beach wedding, a
-                transformative wellness retreat, or an exotic adventure with
-                your beloved, we transform your vision into reality.
+                From the crystal-clear waters of the Maldives, the vibrant
+                beaches of the Dominican Republic and Mexico, to the sun-kissed
+                coastlines of Spain, Italy, and the enchanting islands of
+                Madeira, Canary Islands, and Balearic Islands—every destination
+                tells a story. Explore the timeless charm of Portugal, the
+                natural wonders of Slovenia, and the cultural richness of Serbia
+                and Bosnia.
               </p>
-            </div>
-
-            <div className="flex gap-12 pt-4">
-              <div>
-                <p className="font-display text-4xl font-semibold text-primary">
-                  500+
-                </p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
-                  Dream Weddings
-                </p>
-              </div>
-              <div>
-                <p className="font-display text-4xl font-semibold text-primary">
-                  50+
-                </p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
-                  Destinations
-                </p>
-              </div>
-              <div>
-                <p className="font-display text-4xl font-semibold text-primary">
-                  15+
-                </p>
-                <p className="text-sm text-muted-foreground uppercase tracking-wide">
-                  Years Experience
-                </p>
-              </div>
+              <p>
+                Whether you&apos;re dreaming of an intimate beach wedding, a
+                transformative wellness retreat, or a romantic escape, we curate
+                journeys that celebrate the beauty and soul of these
+                extraordinary places—turning your vision into reality.
+              </p>
             </div>
           </div>
 
