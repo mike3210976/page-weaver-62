@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroWedding from "@/assets/hero-wedding.jpg";
 import retreatImage from "@/assets/retreat.jpg";
 import maldivesImage from "@/assets/maldives.jpg";
 import romanticImage from "@/assets/romantic-escape.jpg";
+import ServiceUploadDialog from "./ServiceUploadDialog";
 
 const services = [
   {
@@ -33,6 +35,8 @@ const services = [
 ];
 
 const ServicesSection = () => {
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+
   return (
     <section id="services" className="py-24 px-6 bg-background">
       <div className="max-w-7xl mx-auto">
@@ -49,7 +53,7 @@ const ServicesSection = () => {
 
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 gap-8">
-          {services.map((service, index) => (
+          {services.map((service) => (
             <article
               key={service.title}
               className="group relative overflow-hidden bg-card rounded-sm shadow-lg hover:shadow-2xl transition-all duration-500"
@@ -76,6 +80,7 @@ const ServicesSection = () => {
                   variant="luxury-outline"
                   size="sm"
                   className="group/btn"
+                  onClick={() => setSelectedService(service.title)}
                 >
                   Learn More
                   <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
@@ -88,6 +93,13 @@ const ServicesSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Upload Dialog */}
+      <ServiceUploadDialog
+        open={selectedService !== null}
+        onOpenChange={(open) => !open && setSelectedService(null)}
+        serviceTitle={selectedService || ""}
+      />
     </section>
   );
 };
