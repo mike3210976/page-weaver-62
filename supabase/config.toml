@@ -1,1 +1,7 @@
 project_id = "cqtgixrrrkqkyovngmnc"
+
+[functions.upload-service-image]
+verify_jwt = false
+
+[functions.delete-service-image]
+verify_jwt = false
