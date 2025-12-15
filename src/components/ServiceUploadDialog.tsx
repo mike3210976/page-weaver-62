@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, ImagePlus, Loader2 } from "lucide-react";
+import { X, ImagePlus, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,7 +35,7 @@ const ServiceUploadDialog = ({
   const [images, setImages] = useState<ServiceImage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -253,7 +253,7 @@ const ServiceUploadDialog = ({
                         src={image.image_url}
                         alt="Service gallery"
                         className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setLightboxImage(image.image_url)}
+                        onClick={() => setLightboxIndex(images.findIndex(img => img.id === image.id))}
                       />
                       <button
                         onClick={(e) => {
@@ -285,24 +285,62 @@ const ServiceUploadDialog = ({
       </Dialog>
 
       {/* Lightbox Modal */}
-      {lightboxImage && (
+      {lightboxIndex !== null && images[lightboxIndex] && (
         <div
           className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setLightboxImage(null)}
+          onClick={() => setLightboxIndex(null)}
         >
+          {/* Close button */}
           <button
-            onClick={() => setLightboxImage(null)}
-            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+            onClick={() => setLightboxIndex(null)}
+            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
             aria-label="Close lightbox"
           >
             <X className="w-6 h-6 text-white" />
           </button>
+
+          {/* Previous arrow */}
+          {images.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : (prev ?? 0) - 1));
+              }}
+              className="absolute left-4 md:left-8 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
+              aria-label="Previous image"
+            >
+              <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-white" />
+            </button>
+          )}
+
+          {/* Image */}
           <img
-            src={lightboxImage}
+            src={images[lightboxIndex].image_url}
             alt="Full size view"
             className="max-w-full max-h-full object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />
+
+          {/* Next arrow */}
+          {images.length > 1 && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex((prev) => ((prev ?? 0) + 1) % images.length);
+              }}
+              className="absolute right-4 md:right-8 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
+              aria-label="Next image"
+            >
+              <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-white" />
+            </button>
+          )}
+
+          {/* Image counter */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-white/10 rounded-full text-white text-sm">
+              {lightboxIndex + 1} / {images.length}
+            </div>
+          )}
         </div>
       )}
     </>
