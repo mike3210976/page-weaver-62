@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Upload, X, ImagePlus, Loader2 } from "lucide-react";
+import { X, ImagePlus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,6 +21,11 @@ interface ServiceImage {
   id: string;
   image_url: string;
 }
+
+// Allowed file types and their magic bytes for client-side pre-validation
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 const ServiceUploadDialog = ({
   open,
@@ -61,49 +66,80 @@ const ServiceUploadDialog = ({
     setIsLoading(false);
   };
 
+  const validateFile = (file: File): { valid: boolean; error?: string } => {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      return { valid: false, error: `${file.name} exceeds 10MB limit` };
+    }
+
+    // Check MIME type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return { valid: false, error: `${file.name} is not a valid image type` };
+    }
+
+    // Check extension
+    const extension = file.name.split(".").pop()?.toLowerCase() || "";
+    if (!ALLOWED_EXTENSIONS.includes(extension)) {
+      return { valid: false, error: `${file.name} has an invalid extension` };
+    }
+
+    return { valid: true };
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
+    let successCount = 0;
 
     for (const file of Array.from(files)) {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${serviceTitle.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from("service-images")
-        .upload(fileName, file);
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
+      // Client-side validation first
+      const validation = validateFile(file);
+      if (!validation.valid) {
         toast({
-          title: "Upload Failed",
-          description: `Failed to upload ${file.name}`,
+          title: "Invalid File",
+          description: validation.error,
           variant: "destructive",
         });
         continue;
       }
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from("service-images")
-        .getPublicUrl(fileName);
+      // Upload via edge function for server-side validation
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("serviceType", serviceTitle);
 
-      // Save to database
-      const { error: dbError } = await supabase
-        .from("service_images")
-        .insert({
-          service_type: serviceTitle,
-          image_url: urlData.publicUrl,
+      try {
+        const { data, error } = await supabase.functions.invoke("upload-service-image", {
+          body: formData,
         });
 
-      if (dbError) {
-        console.error("Database error:", dbError);
+        if (error) {
+          console.error("Upload error:", error);
+          toast({
+            title: "Upload Failed",
+            description: `Failed to upload ${file.name}`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        if (data?.error) {
+          toast({
+            title: "Upload Failed",
+            description: data.error,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        successCount++;
+      } catch (err) {
+        console.error("Upload exception:", err);
         toast({
-          title: "Error",
-          description: "Failed to save image reference",
+          title: "Upload Failed",
+          description: `Failed to upload ${file.name}`,
           variant: "destructive",
         });
       }
@@ -118,39 +154,41 @@ const ServiceUploadDialog = ({
       fileInputRef.current.value = "";
     }
 
-    toast({
-      title: "Success",
-      description: "Images uploaded successfully",
-    });
+    if (successCount > 0) {
+      toast({
+        title: "Success",
+        description: `${successCount} image${successCount > 1 ? "s" : ""} uploaded successfully`,
+      });
+    }
   };
 
   const removeImage = async (id: string, imageUrl: string) => {
-    // Extract filename from URL
-    const fileName = imageUrl.split("/").pop();
-
-    // Delete from storage
-    if (fileName) {
-      await supabase.storage.from("service-images").remove([fileName]);
-    }
-
-    // Delete from database
-    const { error } = await supabase
-      .from("service_images")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("Delete error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete image",
-        variant: "destructive",
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-service-image", {
+        body: { id, imageUrl },
       });
-    } else {
+
+      if (error || data?.error) {
+        console.error("Delete error:", error || data?.error);
+        toast({
+          title: "Error",
+          description: "Failed to delete image",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setImages((prev) => prev.filter((img) => img.id !== id));
       toast({
         title: "Deleted",
         description: "Image removed successfully",
+      });
+    } catch (err) {
+      console.error("Delete exception:", err);
+      toast({
+        title: "Error",
+        description: "Failed to delete image",
+        variant: "destructive",
       });
     }
   };
@@ -178,7 +216,7 @@ const ServiceUploadDialog = ({
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept=".jpg,.jpeg,.png,.webp"
               multiple
               onChange={handleFileChange}
               className="hidden"
