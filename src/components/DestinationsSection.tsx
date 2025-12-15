@@ -4,32 +4,37 @@ const destinations = [
   {
     name: "Maldives",
     description: "Crystal waters & overwater villas",
-    packages: 12,
+    tagline: "Perfect for luxury seekers and honeymooners.",
   },
   {
-    name: "Bora Bora",
-    description: "French Polynesian paradise",
-    packages: 8,
+    name: "Dominican Republic",
+    description: "Caribbean charm & vibrant culture",
+    tagline: "Ideal for beach lovers and adventure enthusiasts.",
   },
   {
-    name: "Amalfi Coast",
-    description: "Italian coastal elegance",
-    packages: 10,
+    name: "Mexico",
+    description: "Sun-kissed beaches & rich heritage",
+    tagline: "Great for family vacations and cultural experiences.",
   },
   {
-    name: "Santorini",
-    description: "Greek island romance",
-    packages: 9,
+    name: "Spain",
+    description: "Mediterranean vibes & historic cities",
+    tagline: "Perfect for foodies and art lovers.",
   },
   {
-    name: "Bali",
-    description: "Spiritual island escape",
-    packages: 15,
+    name: "Italy",
+    description: "Romantic escapes & timeless elegance",
+    tagline: "Ideal for history buffs and culinary explorers.",
   },
   {
-    name: "Seychelles",
-    description: "Pristine island beauty",
-    packages: 7,
+    name: "Slovenia",
+    description: "Alpine beauty & serene lakes",
+    tagline: "A hidden gem for nature lovers and hikers.",
+  },
+  {
+    name: "Bosnia",
+    description: "Cultural crossroads & scenic landscapes",
+    tagline: "Perfect for history enthusiasts and off-the-beaten-path travelers.",
   },
 ];
 
@@ -52,25 +57,25 @@ const DestinationsSection = () => {
         </div>
 
         {/* Destinations Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {destinations.map((destination) => (
             <article
               key={destination.name}
               className="group relative bg-background p-8 rounded-sm border border-border hover:border-primary transition-all duration-300 cursor-pointer hover:shadow-xl"
             >
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col items-center text-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary transition-colors">
                   <MapPin className="w-5 h-5 text-foreground group-hover:text-primary-foreground transition-colors" />
                 </div>
                 <div>
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
                     {destination.name}
                   </h3>
-                  <p className="text-muted-foreground text-sm mb-3">
+                  <p className="text-primary text-sm font-medium mb-2">
                     {destination.description}
                   </p>
-                  <p className="text-xs text-primary font-medium uppercase tracking-wide">
-                    {destination.packages} Packages Available
+                  <p className="text-muted-foreground text-sm">
+                    {destination.tagline}
                   </p>
                 </div>
               </div>
