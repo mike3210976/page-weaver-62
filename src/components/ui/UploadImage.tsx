@@ -1,12 +1,24 @@
 
-import { useState } from 'react';
-import { useSession } from '@supabase/auth-helpers-react';
-import { supabase } from '../integrations/supabase/client';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { Session } from '@supabase/supabase-js';
 
 export default function UploadImage() {
-  const session = useSession();
+  const [session, setSession] = useState<Session | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   if (!session) {
     return <p>Prijavi se, da lahko nalagaš slike.</p>;
@@ -19,7 +31,7 @@ export default function UploadImage() {
     }
 
     const { data, error } = await supabase.storage
-      .from('images') // ime bucket-a v Supabase
+      .from('images')
       .upload(`public/${file.name}`, file);
 
     if (error) {
@@ -38,5 +50,3 @@ export default function UploadImage() {
     </div>
   );
 }
-``
-
