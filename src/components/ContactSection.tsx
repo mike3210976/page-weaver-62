@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Send, Mail, Phone, MapPin } from "lucide-react";
+import { Send, Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const contactSchema = z.object({
   name: z
@@ -29,6 +30,7 @@ const contactSchema = z.object({
 
 const ContactSection = () => {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -51,7 +53,7 @@ const ContactSection = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const result = contactSchema.safeParse(formData);
@@ -67,20 +69,45 @@ const ContactSection = () => {
       return;
     }
 
-    toast({
-      title: "Thank you for reaching out!",
-      description:
-        "We have received your inquiry and will contact you within 24 hours.",
-    });
+    setIsSubmitting(true);
 
-    setFormData({
-      name: "",
-      email: "",
-      service: "",
-      destination: "",
-      date: "",
-      message: "",
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke("send-inquiry", {
+        body: formData,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      toast({
+        title: "Thank you for reaching out!",
+        description:
+          "We have received your inquiry and will contact you within 24 hours.",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        service: "",
+        destination: "",
+        date: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to send your inquiry. Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -279,9 +306,13 @@ const ContactSection = () => {
                 )}
               </div>
 
-              <Button variant="luxury" size="lg" className="w-full" type="submit">
-                <Send className="w-4 h-4 mr-2" />
-                Make Your Dreams Come True
+              <Button variant="luxury" size="lg" className="w-full" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4 mr-2" />
+                )}
+                {isSubmitting ? "Sending..." : "Make Your Dreams Come True"}
               </Button>
             </form>
           </div>

@@ -48,6 +48,34 @@ serve(async (req) => {
   }
 
   try {
+    // Verify user is authenticated
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader) {
+      console.error("No authorization header");
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Create Supabase client with user's JWT to verify auth
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userSupabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await userSupabase.auth.getUser();
+    if (authError || !user) {
+      console.error("Auth error:", authError);
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`Authenticated user: ${user.id}`);
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const serviceType = formData.get("serviceType") as string | null;
@@ -115,7 +143,6 @@ serve(async (req) => {
     console.log(`File validation passed: ${file.name}, size: ${file.size}, type: ${declaredType}`);
 
     // Create Supabase client with service role for storage operations
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
