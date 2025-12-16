@@ -1,7 +1,10 @@
 project_id = "cqtgixrrrkqkyovngmnc"
 
 [functions.upload-service-image]
-verify_jwt = false
+verify_jwt = true
 
 [functions.delete-service-image]
+verify_jwt = true
+
+[functions.send-inquiry]
 verify_jwt = false
