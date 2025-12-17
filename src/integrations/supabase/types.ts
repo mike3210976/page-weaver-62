@@ -35,18 +35,21 @@ export type Database = {
       service_images: {
         Row: {
           created_at: string
+          display_order: number | null
           id: string
           image_url: string
           service_type: string
         }
         Insert: {
           created_at?: string
+          display_order?: number | null
           id?: string
           image_url: string
           service_type: string
         }
         Update: {
           created_at?: string
+          display_order?: number | null
           id?: string
           image_url?: string
           service_type?: string
