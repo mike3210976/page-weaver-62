@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -7,10 +8,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, ImagePlus, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ImagePlus, Loader2, ChevronLeft, ChevronRight, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-
+import { useAuth } from "@/hooks/useAuth";
 interface ServiceUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -38,6 +39,8 @@ const ServiceUploadDialog = ({
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
   // Fetch images when dialog opens
   useEffect(() => {
@@ -196,6 +199,38 @@ const ServiceUploadDialog = ({
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
+
+  // Show login prompt if not authenticated
+  if (!authLoading && !user) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-2xl">{serviceTitle}</DialogTitle>
+            <DialogDescription>
+              Please sign in to upload and manage images.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-4 py-6">
+            <LogIn className="w-12 h-12 text-muted-foreground" />
+            <p className="text-center text-muted-foreground">
+              You need to be signed in to upload images for this service.
+            </p>
+            <Button
+              onClick={() => {
+                onOpenChange(false);
+                navigate("/auth");
+              }}
+              className="gap-2"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <>
