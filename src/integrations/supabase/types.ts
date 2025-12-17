@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      inquiry_rate_limit: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: string
+        }
+        Relationships: []
+      }
       service_images: {
         Row: {
           created_at: string
