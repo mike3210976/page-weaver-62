@@ -8,10 +8,28 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, ImagePlus, Loader2, ChevronLeft, ChevronRight, LogIn } from "lucide-react";
+import { X, ImagePlus, Loader2, ChevronLeft, ChevronRight, LogIn, GripVertical } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 interface ServiceUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -21,12 +39,70 @@ interface ServiceUploadDialogProps {
 interface ServiceImage {
   id: string;
   image_url: string;
+  display_order: number;
 }
 
 // Allowed file types and their magic bytes for client-side pre-validation
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+interface SortableImageProps {
+  image: ServiceImage;
+  onRemove: (id: string, imageUrl: string) => void;
+  onView: (index: number) => void;
+  index: number;
+}
+
+const SortableImage = ({ image, onRemove, onView, index }: SortableImageProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: image.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group aspect-square"
+    >
+      {/* Drag handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 p-1 bg-background/80 rounded cursor-grab opacity-0 group-hover:opacity-100 transition-opacity z-10"
+      >
+        <GripVertical className="w-4 h-4 text-foreground" />
+      </div>
+      
+      <img
+        src={image.image_url}
+        alt="Service gallery"
+        className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+        onClick={() => onView(index)}
+      />
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(image.id, image.image_url);
+        }}
+        className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
 
 const ServiceUploadDialog = ({
   open,
@@ -42,6 +118,17 @@ const ServiceUploadDialog = ({
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   // Fetch images when dialog opens
   useEffect(() => {
     if (open && serviceTitle) {
@@ -53,9 +140,9 @@ const ServiceUploadDialog = ({
     setIsLoading(true);
     const { data, error } = await supabase
       .from("service_images")
-      .select("id, image_url")
+      .select("id, image_url, display_order")
       .eq("service_type", serviceTitle)
-      .order("created_at", { ascending: false });
+      .order("display_order", { ascending: true });
 
     if (error) {
       console.error("Error fetching images:", error);
@@ -196,6 +283,50 @@ const ServiceUploadDialog = ({
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = images.findIndex((img) => img.id === active.id);
+    const newIndex = images.findIndex((img) => img.id === over.id);
+
+    const newImages = arrayMove(images, oldIndex, newIndex);
+    setImages(newImages);
+
+    // Update display_order in database
+    const updates = newImages.map((img, index) => ({
+      id: img.id,
+      display_order: index + 1,
+    }));
+
+    for (const update of updates) {
+      const { error } = await supabase
+        .from("service_images")
+        .update({ display_order: update.display_order })
+        .eq("id", update.id);
+
+      if (error) {
+        console.error("Error updating order:", error);
+        toast({
+          title: "Error",
+          description: "Failed to save image order",
+          variant: "destructive",
+        });
+        // Refresh to get correct order
+        fetchImages();
+        return;
+      }
+    }
+
+    toast({
+      title: "Order saved",
+      description: "Image order updated successfully",
+    });
+  };
+
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
@@ -239,7 +370,7 @@ const ServiceUploadDialog = ({
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">{serviceTitle}</DialogTitle>
             <DialogDescription>
-              Upload your pictures for this service. Images will be saved permanently.
+              Upload your pictures for this service. Drag images to reorder them.
             </DialogDescription>
           </DialogHeader>
 
@@ -271,7 +402,7 @@ const ServiceUploadDialog = ({
               </p>
             </div>
 
-            {/* Images Grid */}
+            {/* Images Grid with Drag and Drop */}
             {isLoading ? (
               <div className="flex justify-center py-8">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -279,29 +410,27 @@ const ServiceUploadDialog = ({
             ) : images.length > 0 ? (
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">
-                  Saved Images ({images.length})
+                  Saved Images ({images.length}) — Drag to reorder
                 </p>
-                <div className="grid grid-cols-3 gap-4">
-                  {images.map((image) => (
-                    <div key={image.id} className="relative group aspect-square">
-                      <img
-                        src={image.image_url}
-                        alt="Service gallery"
-                        className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => setLightboxIndex(images.findIndex(img => img.id === image.id))}
-                      />
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          removeImage(image.id, image.image_url);
-                        }}
-                        className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext items={images.map(img => img.id)} strategy={rectSortingStrategy}>
+                    <div className="grid grid-cols-3 gap-4">
+                      {images.map((image, index) => (
+                        <SortableImage
+                          key={image.id}
+                          image={image}
+                          onRemove={removeImage}
+                          onView={setLightboxIndex}
+                          index={index}
+                        />
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </SortableContext>
+                </DndContext>
               </div>
             ) : (
               <p className="text-center text-muted-foreground py-4">
