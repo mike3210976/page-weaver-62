@@ -49,12 +49,13 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface SortableImageProps {
   image: ServiceImage;
-  onRemove: (id: string, imageUrl: string) => void;
+  onRemove?: (id: string, imageUrl: string) => void;
   onView: (index: number) => void;
   index: number;
+  canEdit: boolean;
 }
 
-const SortableImage = ({ image, onRemove, onView, index }: SortableImageProps) => {
+const SortableImage = ({ image, onRemove, onView, index, canEdit }: SortableImageProps) => {
   const {
     attributes,
     listeners,
@@ -62,7 +63,7 @@ const SortableImage = ({ image, onRemove, onView, index }: SortableImageProps) =
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: image.id });
+  } = useSortable({ id: image.id, disabled: !canEdit });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -76,14 +77,16 @@ const SortableImage = ({ image, onRemove, onView, index }: SortableImageProps) =
       style={style}
       className="relative group aspect-square"
     >
-      {/* Drag handle */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute top-2 left-2 p-1 bg-background/80 rounded cursor-grab opacity-0 group-hover:opacity-100 transition-opacity z-10"
-      >
-        <GripVertical className="w-4 h-4 text-foreground" />
-      </div>
+      {/* Drag handle - only for authenticated users */}
+      {canEdit && (
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute top-2 left-2 p-1 bg-background/80 rounded cursor-grab opacity-0 group-hover:opacity-100 transition-opacity z-10"
+        >
+          <GripVertical className="w-4 h-4 text-foreground" />
+        </div>
+      )}
       
       <img
         src={image.image_url}
@@ -91,15 +94,18 @@ const SortableImage = ({ image, onRemove, onView, index }: SortableImageProps) =
         className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
         onClick={() => onView(index)}
       />
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(image.id, image.image_url);
-        }}
-        className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <X className="w-4 h-4" />
-      </button>
+      {/* Delete button - only for authenticated users */}
+      {canEdit && onRemove && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(image.id, image.image_url);
+          }}
+          className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 };
@@ -331,37 +337,7 @@ const ServiceUploadDialog = ({
     fileInputRef.current?.click();
   };
 
-  // Show login prompt if not authenticated
-  if (!authLoading && !user) {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-display text-2xl">{serviceTitle}</DialogTitle>
-            <DialogDescription>
-              Please sign in to upload and manage images.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4 py-6">
-            <LogIn className="w-12 h-12 text-muted-foreground" />
-            <p className="text-center text-muted-foreground">
-              You need to be signed in to upload images for this service.
-            </p>
-            <Button
-              onClick={() => {
-                onOpenChange(false);
-                navigate("/auth");
-              }}
-              className="gap-2"
-            >
-              <LogIn className="w-4 h-4" />
-              Sign In
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  const canEdit = !authLoading && !!user;
 
   return (
     <>
@@ -370,37 +346,41 @@ const ServiceUploadDialog = ({
           <DialogHeader>
             <DialogTitle className="font-display text-2xl">{serviceTitle}</DialogTitle>
             <DialogDescription>
-              Upload your pictures for this service. Drag images to reorder them.
+              {canEdit 
+                ? "Upload your pictures for this service. Drag images to reorder them."
+                : "Browse our gallery for this service."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
-            {/* Upload Area */}
-            <div
-              onClick={triggerFileInput}
-              className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/60 hover:bg-primary/5 transition-all duration-300"
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp"
-                multiple
-                onChange={handleFileChange}
-                className="hidden"
-                disabled={isUploading}
-              />
-              {isUploading ? (
-                <Loader2 className="w-12 h-12 mx-auto text-primary/50 mb-4 animate-spin" />
-              ) : (
-                <ImagePlus className="w-12 h-12 mx-auto text-primary/50 mb-4" />
-              )}
-              <p className="text-foreground font-medium mb-1">
-                {isUploading ? "Uploading..." : "Click to upload images"}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                PNG, JPG, WEBP up to 10MB each
-              </p>
-            </div>
+            {/* Upload Area - only for authenticated users */}
+            {canEdit && (
+              <div
+                onClick={triggerFileInput}
+                className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary/60 hover:bg-primary/5 transition-all duration-300"
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.webp"
+                  multiple
+                  onChange={handleFileChange}
+                  className="hidden"
+                  disabled={isUploading}
+                />
+                {isUploading ? (
+                  <Loader2 className="w-12 h-12 mx-auto text-primary/50 mb-4 animate-spin" />
+                ) : (
+                  <ImagePlus className="w-12 h-12 mx-auto text-primary/50 mb-4" />
+                )}
+                <p className="text-foreground font-medium mb-1">
+                  {isUploading ? "Uploading..." : "Click to upload images"}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  PNG, JPG, WEBP up to 10MB each
+                </p>
+              </div>
+            )}
 
             {/* Images Grid with Drag and Drop */}
             {isLoading ? (
@@ -410,7 +390,9 @@ const ServiceUploadDialog = ({
             ) : images.length > 0 ? (
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">
-                  Saved Images ({images.length}) — Drag to reorder
+                  {canEdit 
+                    ? `Saved Images (${images.length}) — Drag to reorder`
+                    : `Gallery (${images.length} images)`}
                 </p>
                 <DndContext
                   sensors={sensors}
@@ -423,9 +405,10 @@ const ServiceUploadDialog = ({
                         <SortableImage
                           key={image.id}
                           image={image}
-                          onRemove={removeImage}
+                          onRemove={canEdit ? removeImage : undefined}
                           onView={setLightboxIndex}
                           index={index}
+                          canEdit={canEdit}
                         />
                       ))}
                     </div>
@@ -438,11 +421,27 @@ const ServiceUploadDialog = ({
               </p>
             )}
 
-            {/* Action Button */}
-            <div className="flex justify-end pt-4">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Close
-              </Button>
+            {/* Action Buttons */}
+            <div className="flex justify-between items-center pt-4">
+              {!canEdit && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    onOpenChange(false);
+                    navigate("/auth");
+                  }}
+                  className="gap-2 text-muted-foreground"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign in to upload
+                </Button>
+              )}
+              <div className="ml-auto">
+                <Button variant="outline" onClick={() => onOpenChange(false)}>
+                  Close
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
