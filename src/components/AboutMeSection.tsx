@@ -1,0 +1,90 @@
+const AboutMeSection = () => {
+  return (
+    <section id="about-me" className="py-24 px-6 bg-background">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-16">
+          <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
+            About Me
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight">
+            Hi, I'm <span className="italic font-normal text-primary">Dulce</span>
+          </h2>
+        </div>
+
+        <div className="space-y-12 text-muted-foreground leading-relaxed">
+          <p className="text-lg text-center max-w-2xl mx-auto">
+            Though in my hometown, I'm known as Slađana, or simply Slađa. I chose Dulce because it's easy to say and, honestly, it feels like a little piece of sweetness I carry with me wherever I go.
+          </p>
+
+          <div className="space-y-6">
+            <h3 className="font-display text-2xl font-semibold text-foreground">Who I Am</h3>
+            <p>
+              I'm 41 years old, and if there's one thing that defines me, it's my love for traveling with my family. Ever since I was a child, I dreamed of the Caribbean—the turquoise waters, the endless beaches, the rhythm of life that feels like music.
+            </p>
+            <p>
+              Years later, that dream came true when I set foot in the Dominican Republic, and it was everything I imagined and more:
+            </p>
+            <ul className="list-disc list-inside space-y-2 pl-4">
+              <li>Soft white sand</li>
+              <li>Vibrant energy</li>
+              <li>Smiles of the people</li>
+            </ul>
+            <p className="italic text-primary">It felt like home.</p>
+          </div>
+
+          <div className="space-y-6">
+            <h3 className="font-display text-2xl font-semibold text-foreground">My Passion for Dance</h3>
+            <p>
+              I've always loved to dance, and in the Dominican Republic, I discovered something magical: dance and music aren't just hobbies—they're a way of life. That joy stayed with me, and soon, I shared it with my family.
+            </p>
+            <p>
+              A few years later, they joined me on this adventure, and together we explored every corner of this beautiful country. We laughed, we danced, we tasted new flavors, and we made memories that will last forever.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h3 className="font-display text-2xl font-semibold text-foreground">Traveling Is Our Family's Heartbeat</h3>
+            <p>
+              We've wandered through countless countries, embraced new cultures, and met incredible people along the way. My son, who is now 12, has already been on more than 100 flights! He's learned languages, discovered traditions, and grown up with a world full of colors and stories.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h3 className="font-display text-2xl font-semibold text-foreground">A Dream Wedding</h3>
+            <p>
+              One of the most unforgettable chapters of my life happened in the Dominican Republic—I got married there. It was a dream come true, a celebration beyond anything I could have imagined.
+            </p>
+            <p>
+              For that special moment, I brought my mother along for her first long-distance trip. Watching her experience the magic with us was priceless. Since then, she's joined us on many adventures, and together we've created memories that feel like treasures.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h3 className="font-display text-2xl font-semibold text-foreground">Our Latest Adventure: Mexico</h3>
+            <p>
+              Recently, we visited Mexico. We chose Bacalar, the lake of seven shades of green, and then Tulum. The Yucatán landscape completely captivated us—it was a truly spiritual journey.
+            </p>
+            <p>
+              In Bacalar, it felt as if nature had remained untouched for millions of years. There was an ancient energy, a sense of deep history. I must mention Yanzu water therapy, which was an otherworldly experience for me—something you absolutely have to try.
+            </p>
+            <p>
+              In Tulum, we were enchanted by the cenote caves, which reveal all the breathtaking beauty of nature.
+            </p>
+          </div>
+
+          <div className="space-y-6 text-center pt-8 border-t border-border">
+            <h3 className="font-display text-2xl font-semibold text-foreground">Why I Travel</h3>
+            <p className="text-lg">
+              For me, travel isn't just about places—it's about stories, connections, and joy. Every journey is a new page, every destination a new chapter.
+            </p>
+            <p className="text-xl italic text-primary">
+              And I can't wait to see where the next adventure takes us.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AboutMeSection;
