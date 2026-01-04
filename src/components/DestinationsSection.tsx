@@ -17,6 +17,11 @@ const destinations = [
     tagline: "Great for family vacations and cultural experiences.",
   },
   {
+    name: "Egypt – Marsa Alam",
+    description: "Red Sea paradise & vibrant marine life",
+    tagline: "A hidden gem for divers, snorkelers, and desert explorers.",
+  },
+  {
     name: "Spain",
     description: "Mediterranean vibes & historic cities",
     tagline: "Perfect for foodies and art lovers.",
