@@ -1,43 +1,52 @@
 import { MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const destinations = [
   {
     name: "Maldives",
+    slug: "maldives",
     description: "Crystal waters & overwater villas",
     tagline: "Perfect for luxury seekers and honeymooners.",
   },
   {
     name: "Dominican Republic",
+    slug: "dominican-republic",
     description: "Caribbean charm & vibrant culture",
     tagline: "Ideal for beach lovers and adventure enthusiasts.",
   },
   {
     name: "Mexico",
+    slug: "mexico",
     description: "Sun-kissed beaches & rich heritage",
     tagline: "Great for family vacations and cultural experiences.",
   },
   {
     name: "Egypt – Marsa Alam",
+    slug: "egypt-marsa-alam",
     description: "Red Sea paradise & vibrant marine life",
     tagline: "A hidden gem for divers, snorkelers, and desert explorers.",
   },
   {
     name: "Spain",
+    slug: "spain",
     description: "Mediterranean vibes & historic cities",
     tagline: "Perfect for foodies and art lovers.",
   },
   {
     name: "Italy",
+    slug: "italy",
     description: "Romantic escapes & timeless elegance",
     tagline: "Ideal for history buffs and culinary explorers.",
   },
   {
     name: "Slovenia",
+    slug: "slovenia",
     description: "Alpine beauty & serene lakes",
     tagline: "A hidden gem for nature lovers and hikers.",
   },
   {
     name: "Bosnia",
+    slug: "bosnia",
     description: "Cultural crossroads & scenic landscapes",
     tagline: "Perfect for history enthusiasts and off-the-beaten-path travelers.",
   },
@@ -64,33 +73,36 @@ const DestinationsSection = () => {
         {/* Destinations Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {destinations.map((destination) => (
-            <article
-              key={destination.name}
-              className="group relative bg-background p-8 rounded-sm border border-border hover:border-primary transition-all duration-300 cursor-pointer hover:shadow-xl"
+            <Link
+              key={destination.slug}
+              to={`/destination/${destination.slug}`}
+              className="group"
             >
-              <div className="flex flex-col items-center text-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary transition-colors">
-                  <MapPin className="w-5 h-5 text-foreground group-hover:text-primary-foreground transition-colors" />
+              <article className="relative bg-background p-8 rounded-sm border border-border hover:border-primary transition-all duration-300 cursor-pointer hover:shadow-xl h-full">
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary transition-colors">
+                    <MapPin className="w-5 h-5 text-foreground group-hover:text-primary-foreground transition-colors" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {destination.name}
+                    </h3>
+                    <p className="text-primary text-sm font-medium mb-2">
+                      {destination.description}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {destination.tagline}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {destination.name}
-                  </h3>
-                  <p className="text-primary text-sm font-medium mb-2">
-                    {destination.description}
-                  </p>
-                  <p className="text-muted-foreground text-sm">
-                    {destination.tagline}
-                  </p>
-                </div>
-              </div>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
 
         {/* Note about interactive map */}
         <p className="text-center text-muted-foreground mt-12 text-sm">
-          Contact us to explore our complete collection of destinations
+          Kliknite na destinacijo za več podrobnosti in galerijo slik
         </p>
       </div>
     </section>

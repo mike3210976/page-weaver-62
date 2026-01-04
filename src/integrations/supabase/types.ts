@@ -14,6 +14,71 @@ export type Database = {
   }
   public: {
     Tables: {
+      destination_images: {
+        Row: {
+          created_at: string
+          destination_id: string
+          display_order: number | null
+          id: string
+          image_url: string
+        }
+        Insert: {
+          created_at?: string
+          destination_id: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+        }
+        Update: {
+          created_at?: string
+          destination_id?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "destination_images_destination_id_fkey"
+            columns: ["destination_id"]
+            isOneToOne: false
+            referencedRelation: "destinations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      destinations: {
+        Row: {
+          created_at: string
+          full_description: string | null
+          id: string
+          name: string
+          short_description: string | null
+          slug: string
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_description?: string | null
+          id?: string
+          name: string
+          short_description?: string | null
+          slug: string
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_description?: string | null
+          id?: string
+          name?: string
+          short_description?: string | null
+          slug?: string
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inquiry_rate_limit: {
         Row: {
           created_at: string
