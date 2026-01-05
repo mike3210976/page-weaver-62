@@ -235,12 +235,19 @@ const DestinationDetail = () => {
                 ))}
               </div>
             ) : (
-              <div className="bg-card border border-border rounded-sm p-12 text-center">
+              <div className="bg-card border border-border rounded-sm p-12 text-center flex flex-col items-center gap-4">
                 <p className="text-muted-foreground">
-                  {user
-                    ? "No images uploaded yet. Click the button above to upload."
-                    : "No images available for this destination yet."}
+                  No images available for this destination yet.
                 </p>
+                {user && (
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadImage.isPending}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadImage.isPending ? "Uploading..." : "Upload Images"}
+                  </Button>
+                )}
               </div>
             )}
           </div>
