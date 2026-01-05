@@ -61,10 +61,10 @@ const DestinationDetail = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["destination", slug] });
       setIsEditing(false);
-      toast({ title: "Opis je bil posodobljen" });
+      toast({ title: "Description updated successfully" });
     },
     onError: () => {
-      toast({ title: "Napaka pri posodabljanju opisa", variant: "destructive" });
+      toast({ title: "Error updating description", variant: "destructive" });
     },
   });
 
@@ -96,10 +96,10 @@ const DestinationDetail = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
-      toast({ title: "Slika je bila naložena" });
+      toast({ title: "Image uploaded successfully" });
     },
     onError: () => {
-      toast({ title: "Napaka pri nalaganju slike", variant: "destructive" });
+      toast({ title: "Error uploading image", variant: "destructive" });
     },
   });
 
@@ -114,10 +114,10 @@ const DestinationDetail = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
-      toast({ title: "Slika je bila izbrisana" });
+      toast({ title: "Image deleted successfully" });
     },
     onError: () => {
-      toast({ title: "Napaka pri brisanju slike", variant: "destructive" });
+      toast({ title: "Error deleting image", variant: "destructive" });
     },
   });
 
@@ -140,7 +140,7 @@ const DestinationDetail = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Nalaganje...</p>
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -148,11 +148,11 @@ const DestinationDetail = () => {
   if (!destination) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">Destinacija ni bila najdena</p>
+        <p className="text-muted-foreground">Destination not found</p>
         <Link to="/#destinations">
           <Button variant="outline">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Nazaj na destinacije
+            Back to destinations
           </Button>
         </Link>
       </div>
@@ -168,13 +168,13 @@ const DestinationDetail = () => {
           {/* Back button */}
           <Link to="/#destinations" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors mb-8">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Nazaj na destinacije
+            Back to destinations
           </Link>
 
           {/* Header */}
           <div className="mb-12">
             <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
-              Destinacija
+              Destination
             </p>
             <h1 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-4">
               {destination.name}
@@ -191,7 +191,7 @@ const DestinationDetail = () => {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-2xl font-semibold text-foreground">
-                Galerija slik
+                Image Gallery
               </h2>
               {user && (
                 <>
@@ -208,7 +208,7 @@ const DestinationDetail = () => {
                     disabled={uploadImage.isPending}
                   >
                     <Upload className="w-4 h-4 mr-2" />
-                    {uploadImage.isPending ? "Nalaganje..." : "Naloži slike"}
+                    {uploadImage.isPending ? "Uploading..." : "Upload Images"}
                   </Button>
                 </>
               )}
@@ -238,8 +238,8 @@ const DestinationDetail = () => {
               <div className="bg-card border border-border rounded-sm p-12 text-center">
                 <p className="text-muted-foreground">
                   {user
-                    ? "Še ni naloženih slik. Kliknite gumb zgoraj za nalaganje."
-                    : "Še ni naloženih slik za to destinacijo."}
+                    ? "No images uploaded yet. Click the button above to upload."
+                    : "No images available for this destination yet."}
                 </p>
               </div>
             )}
@@ -249,12 +249,12 @@ const DestinationDetail = () => {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-2xl font-semibold text-foreground">
-                O destinaciji
+                About This Destination
               </h2>
               {user && !isEditing && (
                 <Button variant="outline" onClick={handleStartEditing}>
                   <Edit className="w-4 h-4 mr-2" />
-                  Uredi opis
+                  Edit Description
                 </Button>
               )}
             </div>
@@ -264,17 +264,17 @@ const DestinationDetail = () => {
                 <Textarea
                   value={editedDescription}
                   onChange={(e) => setEditedDescription(e.target.value)}
-                  placeholder="Vnesite podroben opis destinacije..."
+                  placeholder="Enter a detailed description of the destination..."
                   className="min-h-[200px]"
                 />
                 <div className="flex gap-2">
                   <Button onClick={handleSaveDescription} disabled={updateDescription.isPending}>
                     <Save className="w-4 h-4 mr-2" />
-                    {updateDescription.isPending ? "Shranjujem..." : "Shrani"}
+                    {updateDescription.isPending ? "Saving..." : "Save"}
                   </Button>
                   <Button variant="outline" onClick={() => setIsEditing(false)}>
                     <X className="w-4 h-4 mr-2" />
-                    Prekliči
+                    Cancel
                   </Button>
                 </div>
               </div>
@@ -287,8 +287,8 @@ const DestinationDetail = () => {
                 ) : (
                   <p className="text-muted-foreground italic">
                     {user
-                      ? "Opis še ni bil dodan. Kliknite gumb zgoraj za urejanje."
-                      : "Opis za to destinacijo bo kmalu na voljo."}
+                      ? "No description added yet. Click the button above to edit."
+                      : "Description for this destination coming soon."}
                   </p>
                 )}
               </div>
