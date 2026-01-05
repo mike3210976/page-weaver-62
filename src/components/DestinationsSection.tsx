@@ -102,7 +102,7 @@ const DestinationsSection = () => {
 
         {/* Note about interactive map */}
         <p className="text-center text-muted-foreground mt-12 text-sm">
-          Kliknite na destinacijo za več podrobnosti in galerijo slik
+          Click on a destination for more details and image gallery
         </p>
       </div>
     </section>
