@@ -2,12 +2,90 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Upload, Trash2, Edit, Save, X } from "lucide-react";
+import { ArrowLeft, Upload, Trash2, Edit, Save, X, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+interface DestinationImage {
+  id: string;
+  image_url: string;
+  display_order: number;
+}
+
+interface SortableImageProps {
+  image: DestinationImage;
+  destinationName: string;
+  canEdit: boolean;
+  onDelete: (id: string) => void;
+}
+
+const SortableImage = ({ image, destinationName, canEdit, onDelete }: SortableImageProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: image.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative group aspect-square"
+    >
+      <img
+        src={image.image_url}
+        alt={destinationName}
+        className="w-full h-full object-cover rounded-sm"
+      />
+      {canEdit && (
+        <>
+          <button
+            {...attributes}
+            {...listeners}
+            className="absolute top-2 left-2 p-2 bg-background/80 text-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => onDelete(image.id)}
+            className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
 import Footer from "@/components/Footer";
 
 const DestinationDetail = () => {
@@ -121,6 +199,51 @@ const DestinationDetail = () => {
     },
   });
 
+  // Reorder images mutation
+  const reorderImages = useMutation({
+    mutationFn: async (reorderedImages: DestinationImage[]) => {
+      const updates = reorderedImages.map((img, index) => ({
+        id: img.id,
+        display_order: index,
+        destination_id: destination?.id,
+        image_url: img.image_url,
+      }));
+
+      for (const update of updates) {
+        const { error } = await supabase
+          .from("destination_images")
+          .update({ display_order: update.display_order })
+          .eq("id", update.id);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
+      toast({ title: "Image order updated" });
+    },
+    onError: () => {
+      toast({ title: "Error updating image order", variant: "destructive" });
+    },
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = images.findIndex((img) => img.id === active.id);
+      const newIndex = images.findIndex((img) => img.id === over.id);
+      const newOrder = arrayMove(images, oldIndex, newIndex);
+      reorderImages.mutate(newOrder);
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -215,25 +338,25 @@ const DestinationDetail = () => {
             </div>
 
             {images.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {images.map((image) => (
-                  <div key={image.id} className="relative group aspect-square">
-                    <img
-                      src={image.image_url}
-                      alt={destination.name}
-                      className="w-full h-full object-cover rounded-sm"
-                    />
-                    {user && (
-                      <button
-                        onClick={() => deleteImage.mutate(image.id)}
-                        className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext items={images.map((img) => img.id)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {images.map((image) => (
+                      <SortableImage
+                        key={image.id}
+                        image={image}
+                        destinationName={destination.name}
+                        canEdit={!!user}
+                        onDelete={(id) => deleteImage.mutate(id)}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
             ) : (
               <div className="bg-card border border-border rounded-sm p-12 text-center flex flex-col items-center gap-4">
                 <p className="text-muted-foreground">
