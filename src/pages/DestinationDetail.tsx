@@ -6,6 +6,11 @@ import { ArrowLeft, Upload, Trash2, Edit, Save, X, GripVertical } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
 import {
@@ -37,9 +42,10 @@ interface SortableImageProps {
   destinationName: string;
   canEdit: boolean;
   onDelete: (id: string) => void;
+  onClick: () => void;
 }
 
-const SortableImage = ({ image, destinationName, canEdit, onDelete }: SortableImageProps) => {
+const SortableImage = ({ image, destinationName, canEdit, onDelete, onClick }: SortableImageProps) => {
   const {
     attributes,
     listeners,
@@ -64,7 +70,8 @@ const SortableImage = ({ image, destinationName, canEdit, onDelete }: SortableIm
       <img
         src={image.image_url}
         alt={destinationName}
-        className="w-full h-full object-cover rounded-sm"
+        className="w-full h-full object-cover rounded-sm cursor-pointer hover:opacity-90 transition-opacity"
+        onClick={onClick}
       />
       {canEdit && (
         <>
@@ -76,7 +83,10 @@ const SortableImage = ({ image, destinationName, canEdit, onDelete }: SortableIm
             <GripVertical className="w-4 h-4" />
           </button>
           <button
-            onClick={() => onDelete(image.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(image.id);
+            }}
             className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <Trash2 className="w-4 h-4" />
@@ -96,6 +106,8 @@ const DestinationDetail = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState("");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   // Fetch destination details
   const { data: destination, isLoading } = useQuery({
@@ -352,6 +364,10 @@ const DestinationDetail = () => {
                         destinationName={destination.name}
                         canEdit={!!user}
                         onDelete={(id) => deleteImage.mutate(id)}
+                        onClick={() => {
+                          setLightboxIndex(images.findIndex((img) => img.id === image.id));
+                          setLightboxOpen(true);
+                        }}
                       />
                     ))}
                   </div>
@@ -428,6 +444,42 @@ const DestinationDetail = () => {
       </section>
 
       <Footer />
+
+      {/* Lightbox Dialog */}
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+          <div className="relative flex items-center justify-center min-h-[80vh]">
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() => setLightboxIndex((prev) => (prev - 1 + images.length) % images.length)}
+                  className="absolute left-4 p-2 bg-background/20 hover:bg-background/40 text-white rounded-full transition-colors z-10"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={() => setLightboxIndex((prev) => (prev + 1) % images.length)}
+                  className="absolute right-4 p-2 bg-background/20 hover:bg-background/40 text-white rounded-full transition-colors z-10"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+            {images[lightboxIndex] && (
+              <img
+                src={images[lightboxIndex].image_url}
+                alt={destination.name}
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+            )}
+            {images.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+                {lightboxIndex + 1} / {images.length}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };
