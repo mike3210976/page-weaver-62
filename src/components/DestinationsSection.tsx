@@ -50,6 +50,18 @@ const destinations = [
     description: "Cultural crossroads & scenic landscapes",
     tagline: "Perfect for history enthusiasts and off-the-beaten-path travelers.",
   },
+  {
+    name: "Portugal",
+    slug: "portugal",
+    description: "Atlantic charm & coastal beauty",
+    tagline: "Ideal for explorers, wine lovers, and sunset chasers.",
+  },
+  {
+    name: "Madeira",
+    slug: "madeira",
+    description: "A jewel in the Atlantic",
+    tagline: "Perfect for nature lovers and those seeking relaxation.",
+  },
 ];
 
 const DestinationsSection = () => {
