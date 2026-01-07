@@ -162,7 +162,7 @@ const DestinationDetail = () => {
   const uploadImage = useMutation({
     mutationFn: async (file: File) => {
       const fileExt = file.name.split(".").pop();
-      const fileName = `${destination?.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${destination?.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("destination-images")
@@ -174,12 +174,23 @@ const DestinationDetail = () => {
         .from("destination-images")
         .getPublicUrl(fileName);
 
+      // Get current max display_order from database to avoid conflicts
+      const { data: maxOrderData } = await supabase
+        .from("destination_images")
+        .select("display_order")
+        .eq("destination_id", destination?.id)
+        .order("display_order", { ascending: false })
+        .limit(1)
+        .single();
+
+      const nextOrder = (maxOrderData?.display_order ?? -1) + 1;
+
       const { error: dbError } = await supabase
         .from("destination_images")
         .insert({
           destination_id: destination?.id,
           image_url: publicUrl.publicUrl,
-          display_order: images.length,
+          display_order: nextOrder,
         });
 
       if (dbError) throw dbError;
@@ -188,7 +199,8 @@ const DestinationDetail = () => {
       queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
       toast({ title: "Image uploaded successfully" });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Upload error:", error);
       toast({ title: "Error uploading image", variant: "destructive" });
     },
   });
