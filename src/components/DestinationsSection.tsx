@@ -78,7 +78,7 @@ const DestinationsSection = () => {
             <span className="italic font-normal">Corner</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Explore our handpicked destinations where dreams come alive
+            Explore our handpicked destinations where dreams come alive – click on a destination to see photos
           </p>
         </div>
 
