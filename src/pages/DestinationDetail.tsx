@@ -199,9 +199,13 @@ const DestinationDetail = () => {
       queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
       toast({ title: "Image uploaded successfully" });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Upload error:", error);
-      toast({ title: "Error uploading image", variant: "destructive" });
+      const message =
+        typeof error?.message === "string"
+          ? error.message
+          : "Upload failed. Please try again.";
+      toast({ title: message, variant: "destructive" });
     },
   });
 
@@ -268,11 +272,17 @@ const DestinationDetail = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      Array.from(files).forEach((file) => uploadImage.mutate(file));
+    if (!files) return;
+
+    // Upload sequentially to avoid concurrent ordering/race issues
+    for (const file of Array.from(files)) {
+      await uploadImage.mutateAsync(file);
     }
+
+    // Allow re-selecting the same files later
+    e.target.value = "";
   };
 
   const handleStartEditing = () => {
