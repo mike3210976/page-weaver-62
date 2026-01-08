@@ -8,3 +8,12 @@ verify_jwt = true
 
 [functions.send-inquiry]
 verify_jwt = false
+
+[functions.subscribe-newsletter]
+verify_jwt = false
+
+[functions.upload-destination-image]
+verify_jwt = true
+
+[functions.delete-destination-image]
+verify_jwt = true
