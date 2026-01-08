@@ -158,42 +158,23 @@ const DestinationDetail = () => {
     },
   });
 
-  // Upload image mutation
+  // Upload image mutation (via backend function for validation)
   const uploadImage = useMutation({
     mutationFn: async (file: File) => {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${destination?.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      if (!destination?.id) throw new Error("Destination not loaded");
 
-      const { error: uploadError } = await supabase.storage
-        .from("destination-images")
-        .upload(fileName, file);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("destinationId", destination.id);
 
-      if (uploadError) throw uploadError;
+      const { data, error } = await supabase.functions.invoke("upload-destination-image", {
+        body: formData,
+      });
 
-      const { data: publicUrl } = supabase.storage
-        .from("destination-images")
-        .getPublicUrl(fileName);
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
-      // Get current max display_order from database to avoid conflicts
-      const { data: maxOrderData } = await supabase
-        .from("destination_images")
-        .select("display_order")
-        .eq("destination_id", destination?.id)
-        .order("display_order", { ascending: false })
-        .limit(1)
-        .single();
-
-      const nextOrder = (maxOrderData?.display_order ?? -1) + 1;
-
-      const { error: dbError } = await supabase
-        .from("destination_images")
-        .insert({
-          destination_id: destination?.id,
-          image_url: publicUrl.publicUrl,
-          display_order: nextOrder,
-        });
-
-      if (dbError) throw dbError;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
@@ -209,21 +190,23 @@ const DestinationDetail = () => {
     },
   });
 
-  // Delete image mutation
+  // Delete image mutation (also removes file from storage)
   const deleteImage = useMutation({
     mutationFn: async (imageId: string) => {
-      const { error } = await supabase
-        .from("destination_images")
-        .delete()
-        .eq("id", imageId);
+      const { data, error } = await supabase.functions.invoke("delete-destination-image", {
+        body: { id: imageId },
+      });
+
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
       toast({ title: "Image deleted successfully" });
     },
-    onError: () => {
-      toast({ title: "Error deleting image", variant: "destructive" });
+    onError: (error: any) => {
+      const message = typeof error?.message === "string" ? error.message : "Error deleting image";
+      toast({ title: message, variant: "destructive" });
     },
   });
 
