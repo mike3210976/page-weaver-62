@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 
-const emailSchema = z.string().trim().email({ message: "Vnesite veljaven e-poštni naslov" });
+const emailSchema = z.string().trim().email({ message: "Please enter a valid email address" });
 
 const NewsletterSection = () => {
   const [email, setEmail] = useState("");
@@ -34,23 +34,23 @@ const NewsletterSection = () => {
       });
 
       if (functionError) {
-        throw new Error(functionError.message || "Napaka pri prijavi");
+        throw new Error(functionError.message || "Subscription failed");
       }
 
       setIsSubscribed(true);
       setEmail("");
       toast({
-        title: "Uspešna prijava!",
-        description: "Hvala za prijavo na naše novičke.",
+        title: "Successfully subscribed!",
+        description: "Thank you for subscribing to our newsletter.",
       });
     } catch (err: any) {
       console.error("Newsletter subscription error:", err);
-      const message = err.message || "Napaka pri prijavi. Poskusite znova.";
+      const message = err.message || "Subscription failed. Please try again.";
       
       if (message.includes("already subscribed") || message.includes("duplicate")) {
-        setError("Ta e-poštni naslov je že prijavljen.");
+        setError("This email address is already subscribed.");
       } else if (message.includes("rate limit")) {
-        setError("Preveč poskusov. Poskusite znova čez nekaj minut.");
+        setError("Too many attempts. Please try again in a few minutes.");
       } else {
         setError(message);
       }
@@ -69,18 +69,18 @@ const NewsletterSection = () => {
         </div>
 
         <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground mb-4">
-          Prijavite se na novičke
+          Subscribe to Our Newsletter
         </h2>
 
         <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-          Bodite obveščeni o najnovejših izkušnjah, ekskluzivnih ponudbah in navdihujočih potovanjih. 
-          Prejmite novosti neposredno v vaš e-poštni nabiralnik.
+          Stay informed about our latest experiences, exclusive offers, and inspiring journeys. 
+          Receive updates directly in your inbox.
         </p>
 
         {isSubscribed ? (
           <div className="flex items-center justify-center gap-3 text-primary animate-fade-in">
             <CheckCircle className="w-6 h-6" />
-            <span className="text-lg font-medium">Hvala za prijavo!</span>
+            <span className="text-lg font-medium">Thank you for subscribing!</span>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -88,7 +88,7 @@ const NewsletterSection = () => {
               <div className="flex-1">
                 <Input
                   type="email"
-                  placeholder="Vaš e-poštni naslov"
+                  placeholder="Your email address"
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
@@ -96,7 +96,7 @@ const NewsletterSection = () => {
                   }}
                   className="h-12"
                   disabled={isSubmitting}
-                  aria-label="E-poštni naslov"
+                  aria-label="Email address"
                 />
               </div>
               <Button
@@ -108,10 +108,10 @@ const NewsletterSection = () => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Pošiljam...
+                    Subscribing...
                   </>
                 ) : (
-                  "Prijava"
+                  "Subscribe"
                 )}
               </Button>
             </div>
@@ -119,7 +119,7 @@ const NewsletterSection = () => {
               <p className="text-destructive text-sm mt-2 animate-fade-in">{error}</p>
             )}
             <p className="text-muted-foreground text-xs mt-4">
-              S prijavo se strinjate s prejemanjem naših novičk. Lahko se kadarkoli odjavite.
+              By subscribing, you agree to receive our newsletter. You can unsubscribe at any time.
             </p>
           </form>
         )}

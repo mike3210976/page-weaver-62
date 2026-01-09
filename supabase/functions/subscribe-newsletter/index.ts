@@ -117,7 +117,7 @@ const handler = async (req: Request): Promise<Response> => {
         body: JSON.stringify({
           from: "Sacred Escapes <onboarding@resend.dev>",
           to: [sanitizedEmail],
-          subject: "Dobrodošli med naročniki Sacred Escapes!",
+          subject: "Welcome to Sacred Escapes Newsletter!",
           html: `
             <!DOCTYPE html>
             <html>
@@ -131,27 +131,27 @@ const handler = async (req: Request): Promise<Response> => {
                   <h1 style="color: #d4af37; margin: 0; font-size: 28px; letter-spacing: 2px;">Sacred Escapes</h1>
                 </div>
                 <div style="padding: 40px;">
-                  <h2 style="color: #1a1a2e; margin-top: 0;">Dobrodošli! 🌟</h2>
+                  <h2 style="color: #1a1a2e; margin-top: 0;">Welcome! 🌟</h2>
                   <p style="color: #444; line-height: 1.8; font-size: 16px;">
-                    Hvala za prijavo na naše novičke! Od zdaj naprej boste med prvimi obveščeni o:
+                    Thank you for subscribing to our newsletter! From now on, you'll be among the first to know about:
                   </p>
                   <ul style="color: #444; line-height: 2; font-size: 16px;">
-                    <li>Novih ekskluzivnih destinacijah</li>
-                    <li>Posebnih ponudbah in ugodnostih</li>
-                    <li>Navdihujočih potovalnih zgodbah</li>
-                    <li>Praktičnih nasvetih za nepozabna potovanja</li>
+                    <li>New exclusive destinations</li>
+                    <li>Special offers and promotions</li>
+                    <li>Inspiring travel stories</li>
+                    <li>Practical tips for unforgettable journeys</li>
                   </ul>
                   <p style="color: #444; line-height: 1.8; font-size: 16px;">
-                    Veselimo se, da vas lahko popeljemo na pot do nepozabnih izkušenj.
+                    News awaits you on the Sacred Escapes website. Check it out and see what's new!
                   </p>
                   <p style="color: #666; font-style: italic; margin-top: 30px;">
-                    S spoštovanjem,<br>
-                    Ekipa Sacred Escapes
+                    With warm regards,<br>
+                    Your Sacred Escapes Team
                   </p>
                 </div>
                 <div style="background-color: #f5f5f5; padding: 20px; text-align: center;">
                   <p style="color: #888; font-size: 12px; margin: 0;">
-                    To sporočilo ste prejeli, ker ste se prijavili na novičke Sacred Escapes.
+                    You received this email because you subscribed to the Sacred Escapes newsletter.
                   </p>
                 </div>
               </div>
