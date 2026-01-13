@@ -49,6 +49,9 @@ const ServicesSection = () => {
             Curated Experiences for the{" "}
             <span className="italic font-normal">Soul</span>
           </h2>
+          <p className="text-muted-foreground mt-4 text-lg">
+            Click "Learn More" on each experience to discover photos from my personal travels over the last 10 years.
+          </p>
         </div>
 
         {/* Services Grid */}
