@@ -322,7 +322,7 @@ const DestinationDetail = () => {
             <p className="text-xl text-primary font-medium mb-2">
               {destination.short_description}
             </p>
-            <p className="text-muted-foreground">
+            <p className="text-xl text-cyan-500 font-medium italic">
               {destination.tagline}
             </p>
           </div>
