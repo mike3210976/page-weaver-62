@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import heroWedding from "@/assets/hero-wedding.jpg";
-import retreatImage from "@/assets/retreat.jpg";
-import maldivesImage from "@/assets/maldives.jpg";
-import romanticImage from "@/assets/romantic-escape.jpg";
+import beachWeddingImage from "@/assets/beach-wedding.jpg";
+import spiritualRetreatImage from "@/assets/spiritual-retreat.jpg";
+import exoticTravelImage from "@/assets/exotic-travel.jpg";
+import romanticEscapeImage from "@/assets/romantic-escape-new.jpg";
 import ServiceUploadDialog from "./ServiceUploadDialog";
 
 const services = [
@@ -12,25 +12,25 @@ const services = [
     title: "Dream Beach Weddings",
     description:
       "Say 'I do' with your toes in the sand and the sunset as your backdrop. We craft intimate ceremonies and grand celebrations in the world's most breathtaking coastal destinations.",
-    image: heroWedding,
+    image: beachWeddingImage,
   },
   {
     title: "Spiritual Retreats",
     description:
       "Reconnect with your inner self through carefully curated wellness journeys. From yoga sanctuaries to meditation havens, find peace in paradise.",
-    image: retreatImage,
+    image: spiritualRetreatImage,
   },
   {
     title: "Exotic Travel",
     description:
       "Discover hidden gems and iconic destinations with our bespoke luxury travel packages. Every journey is tailored to your desires and sense of adventure.",
-    image: maldivesImage,
+    image: exoticTravelImage,
   },
   {
     title: "Romantic Escapes",
     description:
       "Whether it's a honeymoon, anniversary, or simply celebrating love, we design intimate getaways that kindle romance and create lasting memories.",
-    image: romanticImage,
+    image: romanticEscapeImage,
   },
 ];
 
