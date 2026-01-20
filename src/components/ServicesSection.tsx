@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import beachWeddingImage from "@/assets/beach-wedding.jpg";
+import beachWeddingBrideImage from "@/assets/beach-wedding-bride.jpg";
 import spiritualRetreatImage from "@/assets/spiritual-retreat.jpg";
 import exoticTravelImage from "@/assets/exotic-travel.jpg";
 import romanticEscapeImage from "@/assets/romantic-escape-new.jpg";
@@ -12,7 +12,7 @@ const services = [
     title: "Dream Beach Weddings",
     description:
       "Say 'I do' with your toes in the sand and the sunset as your backdrop. We craft intimate ceremonies and grand celebrations in the world's most breathtaking coastal destinations.",
-    image: beachWeddingImage,
+    image: beachWeddingBrideImage,
   },
   {
     title: "Spiritual Retreats",
