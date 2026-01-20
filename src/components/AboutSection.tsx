@@ -1,6 +1,6 @@
-import maldivesImage from "@/assets/maldives.jpg";
-import retreatImage from "@/assets/retreat.jpg";
-import romanticImage from "@/assets/romantic-escape.jpg";
+import beachWeddingImage from "@/assets/beach-wedding.jpg";
+import spiritualRetreatImage from "@/assets/spiritual-retreat.jpg";
+import romanticEscapeImage from "@/assets/romantic-escape-new.jpg";
 
 const AboutSection = () => {
   return (
@@ -47,25 +47,25 @@ const AboutSection = () => {
 
           {/* Image Collage */}
           <div className="relative grid grid-cols-2 gap-4 h-[500px]">
-            <div className="relative row-span-2">
+            <div className="relative row-span-2 overflow-hidden rounded-sm shadow-xl">
               <img
-                src={maldivesImage}
-                alt="Luxury overwater bungalow in Maldives"
-                className="w-full h-full object-cover rounded-sm shadow-xl"
+                src={beachWeddingImage}
+                alt="Dream beach wedding ceremony"
+                className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
               />
             </div>
-            <div className="relative">
+            <div className="relative overflow-hidden rounded-sm shadow-xl">
               <img
-                src={retreatImage}
-                alt="Peaceful meditation retreat at sunrise"
-                className="w-full h-full object-cover rounded-sm shadow-xl"
+                src={spiritualRetreatImage}
+                alt="Spiritual retreat at cenote"
+                className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
               />
             </div>
-            <div className="relative">
+            <div className="relative overflow-hidden rounded-sm shadow-xl">
               <img
-                src={romanticImage}
-                alt="Romantic couple on beach at sunset"
-                className="w-full h-full object-cover rounded-sm shadow-xl"
+                src={romanticEscapeImage}
+                alt="Romantic beach escape in Dominican Republic"
+                className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
               />
             </div>
             {/* Decorative element */}
