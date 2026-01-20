@@ -1,4 +1,3 @@
-import beachWeddingImage from "@/assets/beach-wedding.jpg";
 import spiritualRetreatImage from "@/assets/spiritual-retreat.jpg";
 import romanticEscapeImage from "@/assets/romantic-escape-new.jpg";
 import bartenderImage from "@/assets/bartender-cocktail.jpg";
@@ -51,22 +50,13 @@ const AboutSection = () => {
           {/* Image Collage - 6 images in creative grid */}
           <div className="relative">
             <div className="grid grid-cols-3 gap-3 h-[550px]">
-              {/* Left column - 2 stacked images */}
-              <div className="flex flex-col gap-3">
-                <div className="relative flex-1 overflow-hidden rounded-sm shadow-xl">
-                  <img
-                    src={beachWeddingImage}
-                    alt="Dream beach wedding ceremony"
-                    className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="relative flex-1 overflow-hidden rounded-sm shadow-xl">
-                  <img
-                    src={bartenderImage}
-                    alt="Caribbean hospitality"
-                    className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
+              {/* Left column - 1 tall image */}
+              <div className="relative overflow-hidden rounded-sm shadow-xl">
+                <img
+                  src={bartenderImage}
+                  alt="Caribbean hospitality"
+                  className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                />
               </div>
 
               {/* Middle column - 1 tall image */}
