@@ -400,7 +400,7 @@ const ServiceUploadDialog = ({
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext items={images.map(img => img.id)} strategy={rectSortingStrategy}>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-5">
                       {images.map((image, index) => (
                         <SortableImage
                           key={image.id}
