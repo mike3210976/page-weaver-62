@@ -13,13 +13,16 @@ const AboutMeSection = () => {
 
         <div className="space-y-12 text-muted-foreground leading-relaxed">
           <p className="text-lg text-center max-w-2xl mx-auto">
-            Though in my hometown, I'm known as Slađana, or simply Slađa. I chose Dulce because it's easy to say and, honestly, it feels like a little piece of sweetness I carry with me wherever[...]
+            Though in my hometown, I'm known as Slađana, or simply Slađa. I chose Dulce because it's easy to say and, honestly, it feels like a little piece of sweetness I carry with me wherever life takes me.
           </p>
 
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">Who I Am</h3>
             <p>
-              If there's one thing that defines me, it's my love for traveling with my family. Ever since I was a child, I dreamed of the Caribbean—the turquoise waters, th[...]
+              If there's one thing that defines me, it's my love for traveling with my family. Ever since I was a child, I dreamed of the Caribbean—the turquoise waters, the warm breeze,
+  the colors, the rhythm, and the feeling of absolute freedom. I promised myself that one day I would see it with my own eyes.
+</p>
+
             </p>
             <p>
               Years later, that dream came true when I set foot in the Dominican Republic, and it was everything I imagined and more:
@@ -35,10 +38,12 @@ const AboutMeSection = () => {
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">My Passion for Dance</h3>
             <p>
-              I've always loved to dance, and in the Dominican Republic, I discovered something magical: dance and music aren't just hobbies—they're a way of life. That joy stayed with me, and s[...]
+              I've always loved to dance, and in the Dominican Republic, I discovered something magical: dance and music aren't just hobbies—they're a way of life. That joy stayed with me, and slowly became a beautiful part of my own identit
             </p>
             <p>
-              A few years later, they joined me on this adventure, and together we explored every corner of this beautiful country. We laughed, we danced, we tasted new flavors, and we made memori[...]
+              A few years later, they joined me on this adventure, and together we explored every corner of this beautiful country. We laughed, we danced, we tasted new flavors,and we created memories
+  that we still talk about today
+
             </p>
           </div>
 
@@ -48,8 +53,13 @@ const AboutMeSection = () => {
               We've wandered through countless countries, embraced new cultures, and met incredible people along the way.
             </p>
             <p>
-              My son, who is now 12, has already been on more than 100 flights! He's lea[...]
-            </p>
+             
+<p>
+  My son, who is now 12, has already been on more than 100 flights! He’s learned more from
+  exploring the world than any classroom could ever teach—confidence, curiosity, kindness,
+  and the understanding that the world is full of different people, cultures, and possibilities.
+</p>
+
           </div>
 
           <div className="space-y-6">
