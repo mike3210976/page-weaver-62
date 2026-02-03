@@ -13,13 +13,13 @@ const AboutMeSection = () => {
 
         <div className="space-y-12 text-muted-foreground leading-relaxed">
           <p className="text-lg text-center max-w-2xl mx-auto">
-            Though in my hometown, I'm known as Slađana, or simply Slađa. I chose Dulce because it's easy to say and, honestly, it feels like a little piece of sweetness I carry with me wherever[...] 
+            Though in my hometown, I'm known as Slađana, or simply Slađa. I chose Dulce because it's easy to say and, honestly, it feels like a little piece of sweetness I carry with me wherever[...]
           </p>
 
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">Who I Am</h3>
             <p>
-              if there's one thing that defines me, it's my love for traveling with my family. Ever since I was a child, I dreamed of the Caribbean—the turquoise waters, th[...] 
+              If there's one thing that defines me, it's my love for traveling with my family. Ever since I was a child, I dreamed of the Caribbean—the turquoise waters, th[...]
             </p>
             <p>
               Years later, that dream came true when I set foot in the Dominican Republic, and it was everything I imagined and more:
@@ -35,27 +35,33 @@ const AboutMeSection = () => {
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">My Passion for Dance</h3>
             <p>
-              I've always loved to dance, and in the Dominican Republic, I discovered something magical: dance and music aren't just hobbies—they're a way of life. That joy stayed with me, and s[...] 
+              I've always loved to dance, and in the Dominican Republic, I discovered something magical: dance and music aren't just hobbies—they're a way of life. That joy stayed with me, and s[...]
             </p>
             <p>
-              A few years later, they joined me on this adventure, and together we explored every corner of this beautiful country. We laughed, we danced, we tasted new flavors, and we made memori[...] 
+              A few years later, they joined me on this adventure, and together we explored every corner of this beautiful country. We laughed, we danced, we tasted new flavors, and we made memori[...]
             </p>
           </div>
 
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">Traveling Is Our Family's Heartbeat</h3>
             <p>
-              We've wandered through countless countries, embraced new cultures, and met incredible people along the way. My son, who is now 12, has already been on more than 100 flights! He's lea[...] 
+              We've wandered through countless countries, embraced new cultures, and met incredible people along the way.
+            </p>
+            <p>
+              My son, who is now 12, has already been on more than 100 flights! He's lea[...]
             </p>
           </div>
 
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">A Dream Wedding</h3>
             <p>
-              One of the most unforgettable chapters of my life happened in the Dominican Republic—I got married there. It was a dream come true, a celebration beyond anything I could have imagi[...] 
+              One of the most unforgettable chapters of my life happened in the Dominican Republic—I got married there.
             </p>
             <p>
-              For that special moment, I brought my mother along for her first long-distance trip. Watching her experience the magic with us was priceless. Since then, she's joined us on many adve[...] 
+              It was a dream come true, a celebration beyond anything I could have imagi[...]
+            </p>
+            <p>
+              For that special moment, I brought my mother along for her first long-distance trip. Watching her experience the magic with us was priceless. Since then, she's joined us on many adve[...]
             </p>
           </div>
 
@@ -65,7 +71,7 @@ const AboutMeSection = () => {
               Recently, we visited Mexico. We chose Bacalar, the lake of seven shades of green, and then Tulum. The Yucatán landscape completely captivated us—it was a truly spiritual journey.
             </p>
             <p>
-              In Bacalar, it felt as if nature had remained untouched for millions of years. There was an ancient energy, a sense of deep history. I must mention Yanzu water therapy, which was an [...] 
+              In Bacalar, it felt as if nature had remained untouched for millions of years. There was an ancient energy, a sense of deep history. I must mention Yanzu water therapy, which was an [...]
             </p>
             <p>
               In Tulum, we were enchanted by the cenote caves, which reveal all the breathtaking beauty of nature.
