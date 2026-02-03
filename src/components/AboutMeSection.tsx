@@ -68,10 +68,15 @@ const AboutMeSection = () => {
               One of the most unforgettable chapters of my life happened in the Dominican Republic—I got married there.
             </p>
             <p>
-              It was a dream come true, a celebration beyond anything I could have imagi[...]
+              
+<p>
+  It was a dream come true, a celebration beyond anything I could have imagined—surrounded by
+  palm trees, ocean air, and the people who mean the most to me.
+</p>
+
             </p>
             <p>
-              For that special moment, I brought my mother along for her first long-distance trip. Watching her experience the magic with us was priceless. Since then, she's joined us on many adve[...]
+              For that special moment, I brought my mother along for her first long-distance trip. Watching her experience the magic with us was priceless. Since then, she's joined us on many adventures each one bringing us even closer together
             </p>
           </div>
 
@@ -81,7 +86,13 @@ const AboutMeSection = () => {
               Recently, we visited Mexico. We chose Bacalar, the lake of seven shades of green, and then Tulum. The Yucatán landscape completely captivated us—it was a truly spiritual journey.
             </p>
             <p>
-              In Bacalar, it felt as if nature had remained untouched for millions of years. There was an ancient energy, a sense of deep history. I must mention Yanzu water therapy, which was an [...]
+            
+<p>
+  In Bacalar, it felt as if nature had remained untouched for millions of years. There was a deep,
+  ancient energy in the air. I must mention Yanzu water therapy—an unforgettable, healing experience
+  that left us peaceful, centered, and deeply connected.
+</p>
+
             </p>
             <p>
               In Tulum, we were enchanted by the cenote caves, which reveal all the breathtaking beauty of nature.
