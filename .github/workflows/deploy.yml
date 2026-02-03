@@ -31,13 +31,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
       - name: Build
+        env:
+          CI: false
         run: npm run build
 
-      # (Neobvezno) SPA fallback: kopiraj index.html v 404.html, da BrowserRouter deluje pri refreshu
       - name: Add SPA 404 fallback
-        run: |
-          cp dist/index.html dist/404.html
+        run: cp dist/index.html dist/404.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -54,4 +57,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-``
