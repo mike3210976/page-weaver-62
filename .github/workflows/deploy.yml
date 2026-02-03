@@ -1,71 +1,80 @@
+name: Build and Deploy to GitHub Pages
 
- name: Build and Deploy to GitHub Pages
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
 
- on:
-   push:
-     branches: [ "main" ]
-   workflow_dispatch:
-@@
- jobs:
-   build:
-     runs-on: ubuntu-latest
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v4
-@@
--      - name: Install dependencies
-+      - name: Install dependencies
-         run: npm ci
--
--      - name: Configure Pages
--        uses: actions/configure-pages@v5
-+      # (Optional) configure-pages ni nujen, deploy-pages@v4 ga pokrije
-+      # - name: Configure Pages
-+      #   uses: actions/configure-pages@v5
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-       - name: Build
-         env:
-           CI: false
-         run: npm run build
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
-       - name: Add SPA 404 fallback
-         run: cp dist/index.html dist/404.html
-+
-+      # ⬇️ NOVO: izklopi Jekyll (kritično za /assets)
-+      - name: Disable Jekyll
-+        run: touch dist/.nojekyll
-+
-+      # ⬇️ NOVO: vključi CNAME v artifact (če obstaja)
-+      - name: Include CNAME (if present)
-+        run: |
-+          if [ -f CNAME ]; then
-+            cp CNAME dist/CNAME
-+          else
-+            echo "No CNAME file in repo root; skipping."
-+          fi
-+
-+      # ⬇️ NOVO: diagnostični izpis (dokaz v logu)
-+      - name: List built files
-+        run: |
-+          echo "== dist listing =="
-+          ls -la dist
-+          echo "== assets listing =="
-+          ls -la dist/assets || true
-+          echo "== first 40 lines of dist/index.html =="
-+          sed -n '1,40p' dist/index.html
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-       - name: Upload artifact
-         uses: actions/upload-pages-artifact@v3
-         with:
-           path: 'dist'
-@@
-   deploy:
-     environment:
-       name: github-pages
-       url: ${{ steps.deployment.outputs.page_url }}
-     runs-on: ubuntu-latest
-     needs: build
-     steps:
-       - name: Deploy to GitHub Pages
-         id: deployment
-         uses: actions/deploy-pages@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: |
+          npm ci || npm install
+
+      - name: Build
+        env:
+          CI: false
+        run: npm run build
+
+      # SPA fallback (React Router deep links)
+      - name: Add SPA 404 fallback
+        run: cp dist/index.html dist/404.html
+
+      # Disable Jekyll in artifact (critical for /assets)
+      - name: Disable Jekyll
+        run: touch dist/.nojekyll
+
+      # Include CNAME if present in repo root (for custom domain)
+      - name: Include CNAME (if present)
+        run: |
+          if [ -f CNAME ]; then
+            cp CNAME dist/CNAME
+          else
+            echo "No CNAME file in repo root; skipping."
+          fi
+
+      # Diagnostics to prove artifact is correct
+      - name: List built files
+        run: |
+          echo "== dist listing =="
+          ls -la dist
+          echo "== assets listing =="
+          ls -la dist/assets || true
+          echo "== first 40 lines of dist/index.html =="
+          sed -n '1,40p' dist/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
