@@ -173,7 +173,7 @@ const ContactSection = () => {
                   <p className="text-sm text-muted-foreground uppercase tracking-wide">
                     Contact Person
                   </p>
-                  <p className="text-foreground">Slađana Horvat</p>
+                  <p className="text-foreground">S&M storitve Slađana Horvat s.p.</p>
                 </div>
               </div>
             </div>
