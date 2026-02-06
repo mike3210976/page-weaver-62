@@ -1,4 +1,4 @@
-import { MapPin } from "lucide-react";
+import { MapPin, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const destinations = [
@@ -80,6 +80,9 @@ const DestinationsSection = () => {
           <p className="text-muted-foreground text-lg">
             Explore our handpicked destinations where dreams come alive – click on a destination to see photos
           </p>
+          <div className="flex justify-center mt-6">
+            <ChevronDown className="w-8 h-8 text-primary animate-bounce" />
+          </div>
         </div>
 
         {/* Destinations Grid */}
