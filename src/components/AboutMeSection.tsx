@@ -59,8 +59,8 @@ const AboutMeSection = () => {
 
             <p>
               A few years later, my family joined me on this journey, and together we
-              explored every corner of this beautiful country. We laughed, danced,
-              tasted new flavors, and created memories that we still talk about today.
+              explored every corner of this beautiful country.
+              We laughed, danced,tasted new flavors, and created memories that we still talk about today.
             </p>
           </div>
 
@@ -101,8 +101,8 @@ const AboutMeSection = () => {
 
             <p>
               For that special moment, I brought my mother along for her first long-distance
-              journey. Watching her experience the magic with us was priceless. Since
-              then she has joined us on many more adventures, each one bringing us closer.
+              journey. Watching her experience the magic with us was priceless. 
+              Since then she has joined us on many more adventures, each one bringing us closer.
             </p>
           </div>
 
@@ -117,13 +117,14 @@ const AboutMeSection = () => {
 
             <p>
               Recently, we visited Mexico, starting with Bacalar, the lake of seven shades of
-              green, and then Tulum. The Yucatan landscape completely captivated us.
+              green, and then Tulum. 
+              The Yucatan landscape completely captivated us.
             </p>
 
             <p>
               In Bacalar, it felt as if nature had remained untouched for millions of
-              years. The ancient energy was undeniable. I also experienced Yanzu water
-              therapy, an unforgettable and deeply healing moment that stayed with me.
+              years. The ancient energy was undeniable. 
+              I also experienced Yanzu water therapy, an unforgettable and deeply healing moment that stayed with me.
             </p>
 
             <p>
