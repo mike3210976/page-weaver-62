@@ -16,7 +16,7 @@ const AboutMeSection = () => {
         <div className="space-y-12 text-muted-foreground leading-relaxed">
           {/* INTRO */}
           <p className="text-lg text-center max-w-2xl mx-auto">
-            Though in my hometown I'm known as Sla\u0111ana, or simply Sla\u0111a, I chose the
+            Though in my hometown I'm known as Slađana, or simply Slađi, I chose the
             name Dulce because it feels warm, simple, and sweet, like a little piece
             of joy I carry with me wherever life takes me.
           </p>
@@ -117,7 +117,7 @@ const AboutMeSection = () => {
 
             <p>
               Recently, we visited Mexico, starting with Bacalar, the lake of seven shades of
-              green, and then Tulum. The Yucat\u00e1n landscape completely captivated us.
+              green, and then Tulum. The Yucatan landscape completely captivated us.
             </p>
 
             <p>
