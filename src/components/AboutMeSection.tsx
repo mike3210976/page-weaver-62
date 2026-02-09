@@ -16,8 +16,8 @@ const AboutMeSection = () => {
         <div className="space-y-12 text-muted-foreground leading-relaxed">
           {/* INTRO */}
           <p className="text-lg text-center max-w-2xl mx-auto">
-            Though in my hometown I'm known as Slađana, or simply Slađa, I chose the
-            name Dulce because it feels warm, simple, and sweet — like a little piece
+            Though in my hometown I'm known as Sla\u0111ana, or simply Sla\u0111a, I chose the
+            name Dulce because it feels warm, simple, and sweet, like a little piece
             of joy I carry with me wherever life takes me.
           </p>
 
@@ -27,14 +27,14 @@ const AboutMeSection = () => {
               Who I Am
             </h3>
             <p>
-              If there’s one thing that defines me, it’s my love for traveling with my
-              family. Ever since I was a child, I dreamed of the Caribbean — the
+              If there's one thing that defines me, it's my love for traveling with my
+              family. Ever since I was a child, I dreamed of the Caribbean: the
               turquoise waters, the warm breeze, the rhythm of music, and the feeling
               of freedom. I promised myself that one day I would see it for real.
             </p>
             <p>
               Years later, that dream finally came true when I set foot in the Dominican
-              Republic — and it was everything I imagined and more:
+              Republic, and it was everything I imagined and more:
             </p>
             <ul className="list-disc list-inside space-y-2 pl-4">
               <li>Soft white sand</li>
@@ -51,9 +51,9 @@ const AboutMeSection = () => {
             </h3>
 
             <p>
-              I’ve always loved to dance, but in the Dominican Republic I discovered
-              something magical: dance and music aren’t just hobbies — they’re a way of
-              life. The rhythm, the joy, the connection — all of it became a part of me
+              I've always loved to dance, but in the Dominican Republic I discovered
+              something magical: dance and music aren't just hobbies, they're a way of
+              life. The rhythm, the joy, the connection... all of it became a part of me
               and shaped who I am today.
             </p>
 
@@ -67,11 +67,11 @@ const AboutMeSection = () => {
           {/* FAMILY TRAVEL */}
           <div className="space-y-6">
             <h3 className="font-display text-2xl font-semibold text-foreground">
-              Traveling Is Our Family’s Heartbeat
+              Traveling Is Our Family's Heartbeat
             </h3>
 
             <p>
-              We’ve wandered through countless countries, embraced different cultures,
+              We've wandered through countless countries, embraced different cultures,
               and met incredible people along the way.
             </p>
 
@@ -90,12 +90,12 @@ const AboutMeSection = () => {
 
             <p>
               One of the most unforgettable chapters of my life happened in the Dominican
-              Republic — I got married there.
+              Republic. I got married there.
             </p>
 
             <p>
               It was a dream come true, a celebration more beautiful than anything I
-              could have imagined — surrounded by palm trees, ocean breeze, and the
+              could have imagined, surrounded by palm trees, ocean breeze, and the
               people I love most.
             </p>
 
@@ -116,14 +116,14 @@ const AboutMeSection = () => {
             </h3>
 
             <p>
-              Recently, we visited Mexico — first Bacalar, the lake of seven shades of
-              green, and then Tulum. The Yucatán landscape completely captivated us.
+              Recently, we visited Mexico, starting with Bacalar, the lake of seven shades of
+              green, and then Tulum. The Yucat\u00e1n landscape completely captivated us.
             </p>
 
             <p>
               In Bacalar, it felt as if nature had remained untouched for millions of
               years. The ancient energy was undeniable. I also experienced Yanzu water
-              therapy — an unforgettable and deeply healing moment that stayed with me.
+              therapy, an unforgettable and deeply healing moment that stayed with me.
             </p>
 
             <p>
@@ -138,12 +138,12 @@ const AboutMeSection = () => {
               Why I Travel
             </h3>
             <p className="text-lg">
-              For me, travel isn’t just about places — it’s about stories, people, and
+              For me, travel isn't just about places. It's about stories, people, and
               unforgettable moments. Every journey becomes a new chapter in the story of
               our lives.
             </p>
             <p className="text-xl italic text-primary">
-              And I can’t wait to see where the next adventure takes us.
+              And I can't wait to see where the next adventure takes us.
             </p>
           </div>
         </div>

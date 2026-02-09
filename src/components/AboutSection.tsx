@@ -33,7 +33,7 @@ const AboutSection = () => {
                 From the crystal-clear waters of the Maldives, the vibrant
                 beaches of the Dominican Republic and Mexico, to the sun-kissed
                 coastlines of Spain, Italy, and the enchanting islands of
-                Madeira, Canary Islands, and Balearic Islands—every destination
+                Madeira, Canary Islands, and Balearic Islands, every destination
                 tells a story. Explore the timeless charm of Portugal, the
                 natural wonders of Slovenia, and the cultural richness of Serbia
                 and Bosnia.
@@ -42,7 +42,7 @@ const AboutSection = () => {
                 Whether you&apos;re dreaming of an intimate beach wedding, a
                 transformative wellness retreat, or a romantic escape, we curate
                 journeys that celebrate the beauty and soul of these
-                extraordinary places—turning your vision into reality.
+                extraordinary places, turning your vision into reality.
               </p>
             </div>
           </div>

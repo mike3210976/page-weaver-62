@@ -391,7 +391,7 @@ const ServiceUploadDialog = ({
               <div className="space-y-3">
                 <p className="text-sm font-medium text-foreground">
                   {canEdit 
-                    ? `Saved Images (${images.length}) — Drag to reorder`
+                    ? `Saved Images (${images.length}) - Drag to reorder`
                     : `Gallery (${images.length} images)`}
                 </p>
                 <DndContext
