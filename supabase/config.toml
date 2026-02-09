@@ -17,3 +17,9 @@ verify_jwt = true
 
 [functions.delete-destination-image]
 verify_jwt = true
+
+[functions.upload-video]
+verify_jwt = true
+
+[functions.delete-video]
+verify_jwt = true
