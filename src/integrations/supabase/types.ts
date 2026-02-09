@@ -139,6 +139,30 @@ export type Database = {
         }
         Relationships: []
       }
+      section_videos: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          section_key: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          section_key: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          section_key?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
       service_images: {
         Row: {
           created_at: string

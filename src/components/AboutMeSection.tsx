@@ -1,3 +1,5 @@
+import SectionVideoUpload from "./SectionVideoUpload";
+
 const AboutMeSection = () => {
   return (
     <section id="about-me" className="py-24 px-6 bg-background">
@@ -103,6 +105,9 @@ const AboutMeSection = () => {
               then she has joined us on many more adventures, each one bringing us closer.
             </p>
           </div>
+
+          {/* Wedding Video Section */}
+          <SectionVideoUpload sectionKey="dream-wedding" />
 
           {/* MEXICO */}
           <div className="space-y-6">
