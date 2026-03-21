@@ -1,11 +1,10 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin } from "lucide-react";
 // POPRAVLJENI UVOZI:
-import { Navigation } from "@/components/Navigation"; // Preveri, če je pri tebi Navigation ali Navbar
+import Navigation from "@/components/Navigation"; // Odstranjeni zaviti oklepaji
 import Footer from "@/components/Footer"; 
 
 const OptimizedImage = ({ src, alt }: { src: string; alt: string }) => {
@@ -63,7 +62,6 @@ const DestinationDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Preveri, če tvoja komponenta uporablja <Navigation /> ali <Navbar /> */}
       <Navigation />
       
       <main className="pt-32 pb-16">
