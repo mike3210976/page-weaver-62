@@ -1,8 +1,3 @@
-Tukaj je celotna, popravljena koda za tvojo datoteko DestinationsSection.tsx.
-
-V kodi sem naredil ključno spremembo: v vrstici 136 sem zamenjal navadno značko <img> z najino novo komponento OptimizedImage. Zdaj se bo vsaka od teh 4 slik v mozaiku naložila šele, ko bo kartica vidna, in to z mehkim prehodom.
-
-TypeScript
 import { MapPin, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
