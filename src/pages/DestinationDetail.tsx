@@ -1,241 +1,129 @@
-import { MapPin, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, MapPin } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
-const OptimizedImage = ({ src, alt, className }: { src: string | null; alt: string; className?: string }) => {
-  // Če je slika na Supabase, ji dodava parametre za hitrejše nalaganje
+// Optimizacija slik posebej za galerijo
+const OptimizedImage = ({ src, alt }: { src: string; alt: string }) => {
   const isSupabase = src?.includes('supabase.co');
-  
-  // Za mozaik na prvi strani so te nastavitve idealne (majhne datoteke, hitro nalaganje)
-  const mobileSrc = isSupabase ? `${src}?width=400&quality=60&format=webp` : src;
-  const desktopSrc = isSupabase ? `${src}?width=600&quality=70&format=webp` : src;
+  // Za galerijo potrebujemo malo večjo ločljivost kot za mozaik (800px)
+  const optimizedSrc = isSupabase ? `${src}?width=800&quality=75&format=webp` : src;
 
   return (
-    <div className={`overflow-hidden bg-muted flex items-center justify-center w-full h-full ${className}`}>
-      <picture className="w-full h-full">
-        {/* Mobilniki naložijo še manjšo verzijo */}
-        <source media="(max-width: 768px)" srcSet={mobileSrc || ""} />
-        <img
-          src={desktopSrc || ""}
-          alt={alt}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
-          onLoad={(e) => {
-            (e.currentTarget as HTMLImageElement).style.opacity = "1";
-          }}
-          style={{ opacity: 0 }}
-        />
-      </picture>
+    <div className="aspect-[4/3] overflow-hidden rounded-sm bg-muted">
+      <img
+        src={optimizedSrc}
+        alt={alt}
+        loading="lazy"
+        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+      />
     </div>
   );
 };
 
-const destinations = [
-  {
-    name: "Maldives",
-    slug: "maldives",
-    description: "Crystal waters & overwater villas",
-    tagline: "Perfect for luxury seekers and honeymooners.",
-  },
-  {
-    name: "Dominican Republic",
-    slug: "dominican-republic",
-    description: "Caribbean charm & vibrant culture",
-    tagline: "Ideal for beach lovers and adventure enthusiasts.",
-  },
-  {
-    name: "Mexico",
-    slug: "mexico",
-    description: "Sun-kissed beaches & rich heritage",
-    tagline: "Great for family vacations and cultural experiences.",
-  },
-  {
-    name: "Egypt – Marsa Alam",
-    slug: "egypt-marsa-alam",
-    description: "Red Sea paradise & vibrant marine life",
-    tagline: "A hidden gem for divers, snorkelers, and desert explorers.",
-  },
-  {
-    name: "Spain",
-    slug: "spain",
-    description: "Mediterranean vibes & historic cities",
-    tagline: "Perfect for foodies and art lovers.",
-  },
-  {
-    name: "Italy",
-    slug: "italy",
-    description: "Romantic escapes & timeless elegance",
-    tagline: "Ideal for history buffs and culinary explorers.",
-  },
-  {
-    name: "Slovenia",
-    slug: "slovenia",
-    description: "Alpine beauty & serene lakes",
-    tagline: "A hidden gem for nature lovers and hikers.",
-  },
-  {
-    name: "Bosnia",
-    slug: "bosnia",
-    description: "Cultural crossroads & scenic landscapes",
-    tagline: "Perfect for history enthusiasts and off-the-beaten-path travelers.",
-  },
-  {
-    name: "Portugal",
-    slug: "portugal",
-    description: "Atlantic charm & coastal beauty",
-    tagline: "Ideal for explorers, wine lovers, and sunset chasers.",
-  },
-  {
-    name: "Madeira",
-    slug: "madeira",
-    description: "A jewel in the Atlantic",
-    tagline: "Perfect for nature lovers and those seeking relaxation.",
-  },
-];
+const DestinationDetail = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
 
-interface DestinationImage {
-  id: string;
-  destination_id: string;
-  image_url: string;
-  display_order: number | null;
-}
-
-const DestinationCard = ({ destination }: { destination: typeof destinations[0] }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const { data: destinationData } = useQuery({
-    queryKey: ["destination-preview", destination.slug],
+  const { data: destination, isLoading } = useQuery({
+    queryKey: ["destination", slug],
     queryFn: async () => {
-      const { data: dest } = await supabase
+      const { data, error } = await supabase
         .from("destinations")
-        .select("id")
-        .eq("slug", destination.slug)
+        .select(`
+          *,
+          destination_images (
+            id,
+            image_url,
+            display_order
+          )
+        `)
+        .eq("slug", slug)
         .single();
 
-      if (!dest) return null;
-
-      const { data: images } = await supabase
-        .from("destination_images")
-        .select("*")
-        .eq("destination_id", dest.id)
-        .order("display_order", { ascending: true })
-        .limit(4);
-
-      return { id: dest.id, images: images || [] };
+      if (error) throw error;
+      return data;
     },
   });
 
-  const images = destinationData?.images || [];
-  const hasImages = images.length > 0;
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading paradise...</div>;
+  }
+
+  if (!destination) {
+    return <div className="min-h-screen flex items-center justify-center">Destination not found.</div>;
+  }
+
+  const images = destination.destination_images?.sort((a, b) => 
+    (a.display_order || 0) - (b.display_order || 0)
+  ) || [];
 
   return (
-    <Link
-      to={`/destination/${destination.slug}`}
-      className="group block"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <article className="relative bg-background p-8 rounded-sm border border-border hover:border-primary transition-all duration-300 cursor-pointer hover:shadow-xl h-full overflow-hidden">
-        
-        {/* Image Mosaic Overlay */}
-        {hasImages && (
-          <div
-            className={`absolute inset-0 z-10 transition-all duration-500 ${
-              isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      
+      <main className="pt-24 pb-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)} 
+            className="mb-8 hover:bg-accent"
           >
-            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-0.5">
-              {images.slice(0, 4).map((image, index) => (
-                <div
-                  key={image.id}
-                  className="relative overflow-hidden"
-                  style={{ transitionDelay: `${index * 50}ms` }}
-                >
-                  <OptimizedImage
-                    src={image.image_url}
-                    alt=""
-                    className={`transition-transform duration-700 ${
-                      isHovered ? "scale-100" : "scale-110"
-                    }`}
-                  />
-                </div>
-              ))}
-              
-              {images.length < 4 &&
-                Array.from({ length: 4 - images.length }).map((_, i) => (
-                  <div key={`empty-${i}`} className="bg-accent/50" />
-                ))}
-            </div>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Destinations
+          </Button>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
-              <h3 className="font-display text-xl font-semibold text-white">
+          <div className="grid lg:grid-cols-2 gap-12 mb-16">
+            <div>
+              <div className="flex items-center gap-2 text-primary mb-4">
+                <MapPin className="h-5 w-5" />
+                <span className="tracking-widest uppercase text-sm font-medium">
+                  {destination.name}
+                </span>
+              </div>
+              <h1 className="font-display text-5xl md:text-6xl font-semibold mb-6">
                 {destination.name}
-              </h3>
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                {destination.tagline || destination.description}
+              </p>
+            </div>
+            
+            {/* Glavna hero slika destinacije */}
+            {images.length > 0 && (
+              <div className="rounded-sm overflow-hidden shadow-2xl">
+                <img 
+                  src={`${images[0].image_url}?width=1200&quality=80&format=webp`} 
+                  alt={destination.name}
+                  className="w-full h-full object-cover aspect-video"
+                />
+              </div>
+            )}
+          </div>
+
+          <hr className="border-border mb-16" />
+
+          {/* Galerija vseh slik */}
+          <div className="space-y-8">
+            <h2 className="font-display text-3xl font-semibold">Image Gallery</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {images.map((image) => (
+                <OptimizedImage 
+                  key={image.id} 
+                  src={image.image_url} 
+                  alt={destination.name} 
+                />
+              ))}
             </div>
           </div>
-        )}
-
-        {/* Default Content */}
-        <div
-          className={`flex flex-col items-center text-center gap-4 transition-opacity duration-300 ${
-            isHovered && hasImages ? "opacity-0" : "opacity-100"
-          }`}
-        >
-          <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary transition-colors">
-            <MapPin className="w-5 h-5 text-foreground group-hover:text-primary-foreground transition-colors" />
-          </div>
-          <div>
-            <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-              {destination.name}
-            </h3>
-            <p className="text-primary text-sm font-medium mb-2">
-              {destination.description}
-            </p>
-            <p className="text-muted-foreground text-sm">
-              {destination.tagline}
-            </p>
-          </div>
         </div>
-      </article>
-    </Link>
+      </main>
+
+      <Footer />
+    </div>
   );
 };
 
-const DestinationsSection = () => {
-  return (
-    <section id="destinations" className="py-24 px-6 bg-card">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
-            Destinations
-          </p>
-          <h2 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-6">
-            Paradise Awaits in Every{" "}
-            <span className="italic font-normal">Corner</span>
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Explore our handpicked destinations where dreams come alive – click on a destination to see photos
-          </p>
-          <div className="flex justify-center mt-6">
-            <ChevronDown className="w-8 h-8 text-primary animate-bounce" />
-          </div>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {destinations.map((destination) => (
-            <DestinationCard key={destination.slug} destination={destination} />
-          ))}
-        </div>
-
-        <p className="text-center text-muted-foreground mt-12 text-sm">
-          Click on a destination for more details and image gallery
-        </p>
-      </div>
-    </section>
-  );
-};
-
-export default DestinationsSection;
+export default DestinationDetail;
