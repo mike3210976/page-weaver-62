@@ -1,15 +1,15 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+// POPRAVLJENI UVOZI:
+import { Navigation } from "@/components/Navigation"; // Preveri, če je pri tebi Navigation ali Navbar
+import Footer from "@/components/Footer"; 
 
-// Optimizacija slik posebej za galerijo
 const OptimizedImage = ({ src, alt }: { src: string; alt: string }) => {
   const isSupabase = src?.includes('supabase.co');
-  // Za galerijo potrebujemo malo večjo ločljivost kot za mozaik (800px)
   const optimizedSrc = isSupabase ? `${src}?width=800&quality=75&format=webp` : src;
 
   return (
@@ -50,11 +50,11 @@ const DestinationDetail = () => {
   });
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading paradise...</div>;
+    return <div className="min-h-screen flex items-center justify-center font-display">Loading paradise...</div>;
   }
 
   if (!destination) {
-    return <div className="min-h-screen flex items-center justify-center">Destination not found.</div>;
+    return <div className="min-h-screen flex items-center justify-center font-display">Destination not found.</div>;
   }
 
   const images = destination.destination_images?.sort((a, b) => 
@@ -63,52 +63,52 @@ const DestinationDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      {/* Preveri, če tvoja komponenta uporablja <Navigation /> ali <Navbar /> */}
+      <Navigation />
       
-      <main className="pt-24 pb-16">
+      <main className="pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-6">
           <Button 
             variant="ghost" 
             onClick={() => navigate(-1)} 
-            className="mb-8 hover:bg-accent"
+            className="mb-8 hover:bg-accent group"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Destinations
+            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" /> 
+            Back to Destinations
           </Button>
 
-          <div className="grid lg:grid-cols-2 gap-12 mb-16">
+          <div className="grid lg:grid-cols-2 gap-12 mb-16 items-center">
             <div>
               <div className="flex items-center gap-2 text-primary mb-4">
                 <MapPin className="h-5 w-5" />
-                <span className="tracking-widest uppercase text-sm font-medium">
+                <span className="tracking-[0.2em] uppercase text-sm font-medium">
                   {destination.name}
                 </span>
               </div>
-              <h1 className="font-display text-5xl md:text-6xl font-semibold mb-6">
+              <h1 className="font-display text-5xl md:text-7xl font-semibold mb-6 leading-tight">
                 {destination.name}
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
                 {destination.tagline || destination.description}
               </p>
             </div>
             
-            {/* Glavna hero slika destinacije */}
             {images.length > 0 && (
-              <div className="rounded-sm overflow-hidden shadow-2xl">
+              <div className="rounded-sm overflow-hidden shadow-2xl aspect-video bg-muted">
                 <img 
-                  src={`${images[0].image_url}?width=1200&quality=80&format=webp`} 
+                  src={`${images[0].image_url}?width=1200&quality=85&format=webp`} 
                   alt={destination.name}
-                  className="w-full h-full object-cover aspect-video"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}
           </div>
 
-          <hr className="border-border mb-16" />
+          <div className="w-full h-px bg-border mb-16" />
 
-          {/* Galerija vseh slik */}
           <div className="space-y-8">
-            <h2 className="font-display text-3xl font-semibold">Image Gallery</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <h2 className="font-display text-3xl font-semibold">Explore the Gallery</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {images.map((image) => (
                 <OptimizedImage 
                   key={image.id} 
