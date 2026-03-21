@@ -7,6 +7,25 @@ import exoticTravelImage from "@/assets/exotic-travel.jpg";
 import romanticEscapeImage from "@/assets/romantic-escape-new.jpg";
 import ServiceUploadDialog from "./ServiceUploadDialog";
 
+// --- OPTIMIZACIJA ZA HITRO NALAGANJE ---
+const OptimizedImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  return (
+    <div className={`overflow-hidden bg-muted w-full h-full ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy" 
+        decoding="async"
+        className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+        onLoad={(e) => {
+          (e.currentTarget as HTMLImageElement).style.opacity = "1";
+        }}
+        style={{ opacity: 0 }}
+      />
+    </div>
+  );
+};
+
 const services = [
   {
     title: "Dream Beach Weddings",
@@ -61,14 +80,14 @@ const ServicesSection = () => {
               key={service.title}
               className="group relative overflow-hidden bg-card rounded-sm shadow-lg hover:shadow-2xl transition-all duration-500"
             >
-              {/* Image */}
+              {/* Image Container */}
               <div className="relative h-64 overflow-hidden">
-                <img
+                <OptimizedImage
                   src={service.image}
                   alt={service.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent pointer-events-none" />
               </div>
 
               {/* Content */}
