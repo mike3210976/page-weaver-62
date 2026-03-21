@@ -1,492 +1,241 @@
-import { useParams, Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { MapPin, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { ArrowLeft, Upload, Trash2, Edit, Save, X, GripVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useState, useRef } from "react";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import Navigation from "@/components/Navigation";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  rectSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 
-interface DestinationImage {
-  id: string;
-  image_url: string;
-  display_order: number;
-}
-
-interface SortableImageProps {
-  image: DestinationImage;
-  destinationName: string;
-  canEdit: boolean;
-  onDelete: (id: string) => void;
-  onClick: () => void;
-}
-
-const SortableImage = ({ image, destinationName, canEdit, onDelete, onClick }: SortableImageProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: image.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+const OptimizedImage = ({ src, alt, className }: { src: string | null; alt: string; className?: string }) => {
+  // Če je slika na Supabase, ji dodava parametre za hitrejše nalaganje
+  const isSupabase = src?.includes('supabase.co');
+  
+  // Za mozaik na prvi strani so te nastavitve idealne (majhne datoteke, hitro nalaganje)
+  const mobileSrc = isSupabase ? `${src}?width=400&quality=60&format=webp` : src;
+  const desktopSrc = isSupabase ? `${src}?width=600&quality=70&format=webp` : src;
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="relative group aspect-square"
-    >
-      <img
-        src={image.image_url}
-        alt={destinationName}
-        className="w-full h-full object-cover rounded-sm cursor-pointer hover:opacity-90 transition-opacity"
-        onClick={onClick}
-      />
-      {canEdit && (
-        <>
-          <button
-            {...attributes}
-            {...listeners}
-            className="absolute top-2 left-2 p-2 bg-background/80 text-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
-          >
-            <GripVertical className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(image.id);
-            }}
-            className="absolute top-2 right-2 p-2 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </>
-      )}
+    <div className={`overflow-hidden bg-muted flex items-center justify-center w-full h-full ${className}`}>
+      <picture className="w-full h-full">
+        {/* Mobilniki naložijo še manjšo verzijo */}
+        <source media="(max-width: 768px)" srcSet={mobileSrc || ""} />
+        <img
+          src={desktopSrc || ""}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+          onLoad={(e) => {
+            (e.currentTarget as HTMLImageElement).style.opacity = "1";
+          }}
+          style={{ opacity: 0 }}
+        />
+      </picture>
     </div>
   );
 };
-import Footer from "@/components/Footer";
 
-const DestinationDetail = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedDescription, setEditedDescription] = useState("");
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
+const destinations = [
+  {
+    name: "Maldives",
+    slug: "maldives",
+    description: "Crystal waters & overwater villas",
+    tagline: "Perfect for luxury seekers and honeymooners.",
+  },
+  {
+    name: "Dominican Republic",
+    slug: "dominican-republic",
+    description: "Caribbean charm & vibrant culture",
+    tagline: "Ideal for beach lovers and adventure enthusiasts.",
+  },
+  {
+    name: "Mexico",
+    slug: "mexico",
+    description: "Sun-kissed beaches & rich heritage",
+    tagline: "Great for family vacations and cultural experiences.",
+  },
+  {
+    name: "Egypt – Marsa Alam",
+    slug: "egypt-marsa-alam",
+    description: "Red Sea paradise & vibrant marine life",
+    tagline: "A hidden gem for divers, snorkelers, and desert explorers.",
+  },
+  {
+    name: "Spain",
+    slug: "spain",
+    description: "Mediterranean vibes & historic cities",
+    tagline: "Perfect for foodies and art lovers.",
+  },
+  {
+    name: "Italy",
+    slug: "italy",
+    description: "Romantic escapes & timeless elegance",
+    tagline: "Ideal for history buffs and culinary explorers.",
+  },
+  {
+    name: "Slovenia",
+    slug: "slovenia",
+    description: "Alpine beauty & serene lakes",
+    tagline: "A hidden gem for nature lovers and hikers.",
+  },
+  {
+    name: "Bosnia",
+    slug: "bosnia",
+    description: "Cultural crossroads & scenic landscapes",
+    tagline: "Perfect for history enthusiasts and off-the-beaten-path travelers.",
+  },
+  {
+    name: "Portugal",
+    slug: "portugal",
+    description: "Atlantic charm & coastal beauty",
+    tagline: "Ideal for explorers, wine lovers, and sunset chasers.",
+  },
+  {
+    name: "Madeira",
+    slug: "madeira",
+    description: "A jewel in the Atlantic",
+    tagline: "Perfect for nature lovers and those seeking relaxation.",
+  },
+];
 
-  // Fetch destination details
-  const { data: destination, isLoading } = useQuery({
-    queryKey: ["destination", slug],
+interface DestinationImage {
+  id: string;
+  destination_id: string;
+  image_url: string;
+  display_order: number | null;
+}
+
+const DestinationCard = ({ destination }: { destination: typeof destinations[0] }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const { data: destinationData } = useQuery({
+    queryKey: ["destination-preview", destination.slug],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: dest } = await supabase
         .from("destinations")
-        .select("*")
-        .eq("slug", slug)
+        .select("id")
+        .eq("slug", destination.slug)
         .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!slug,
-  });
 
-  // Fetch destination images
-  const { data: images = [] } = useQuery({
-    queryKey: ["destination-images", destination?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
+      if (!dest) return null;
+
+      const { data: images } = await supabase
         .from("destination_images")
         .select("*")
-        .eq("destination_id", destination?.id)
-        .order("display_order", { ascending: true });
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!destination?.id,
-  });
+        .eq("destination_id", dest.id)
+        .order("display_order", { ascending: true })
+        .limit(4);
 
-  // Update description mutation
-  const updateDescription = useMutation({
-    mutationFn: async (fullDescription: string) => {
-      const { error } = await supabase
-        .from("destinations")
-        .update({ full_description: fullDescription })
-        .eq("id", destination?.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["destination", slug] });
-      setIsEditing(false);
-      toast({ title: "Description updated successfully" });
-    },
-    onError: () => {
-      toast({ title: "Error updating description", variant: "destructive" });
+      return { id: dest.id, images: images || [] };
     },
   });
 
-  // Upload image mutation (via backend function for validation)
-  const uploadImage = useMutation({
-    mutationFn: async (file: File) => {
-      if (!destination?.id) throw new Error("Destination not loaded");
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("destinationId", destination.id);
-
-      const { data, error } = await supabase.functions.invoke("upload-destination-image", {
-        body: formData,
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
-      toast({ title: "Image uploaded successfully" });
-    },
-    onError: (error: any) => {
-      console.error("Upload error:", error);
-      const message =
-        typeof error?.message === "string"
-          ? error.message
-          : "Upload failed. Please try again.";
-      toast({ title: message, variant: "destructive" });
-    },
-  });
-
-  // Delete image mutation (also removes file from storage)
-  const deleteImage = useMutation({
-    mutationFn: async (imageId: string) => {
-      const { data, error } = await supabase.functions.invoke("delete-destination-image", {
-        body: { id: imageId },
-      });
-
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
-      toast({ title: "Image deleted successfully" });
-    },
-    onError: (error: any) => {
-      const message = typeof error?.message === "string" ? error.message : "Error deleting image";
-      toast({ title: message, variant: "destructive" });
-    },
-  });
-
-  // Reorder images mutation
-  const reorderImages = useMutation({
-    mutationFn: async (reorderedImages: DestinationImage[]) => {
-      const updates = reorderedImages.map((img, index) => ({
-        id: img.id,
-        display_order: index,
-        destination_id: destination?.id,
-        image_url: img.image_url,
-      }));
-
-      for (const update of updates) {
-        const { error } = await supabase
-          .from("destination_images")
-          .update({ display_order: update.display_order })
-          .eq("id", update.id);
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["destination-images", destination?.id] });
-      toast({ title: "Image order updated" });
-    },
-    onError: () => {
-      toast({ title: "Error updating image order", variant: "destructive" });
-    },
-  });
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = images.findIndex((img) => img.id === active.id);
-      const newIndex = images.findIndex((img) => img.id === over.id);
-      const newOrder = arrayMove(images, oldIndex, newIndex);
-      reorderImages.mutate(newOrder);
-    }
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    // Upload sequentially to avoid concurrent ordering/race issues
-    for (const file of Array.from(files)) {
-      await uploadImage.mutateAsync(file);
-    }
-
-    // Allow re-selecting the same files later
-    e.target.value = "";
-  };
-
-  const handleStartEditing = () => {
-    setEditedDescription(destination?.full_description || "");
-    setIsEditing(true);
-  };
-
-  const handleSaveDescription = () => {
-    updateDescription.mutate(editedDescription);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
-  if (!destination) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground">Destination not found</p>
-        <Link to="/#destinations">
-          <Button variant="outline">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to destinations
-          </Button>
-        </Link>
-      </div>
-    );
-  }
+  const images = destinationData?.images || [];
+  const hasImages = images.length > 0;
 
   return (
-    <main className="min-h-screen bg-background">
-      <Navigation />
-      
-      <section className="pt-32 pb-24 px-6">
-        <div className="max-w-5xl mx-auto">
-          {/* Back button */}
-          <Link to="/#destinations" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors mb-8">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to destinations
-          </Link>
+    <Link
+      to={`/destination/${destination.slug}`}
+      className="group block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <article className="relative bg-background p-8 rounded-sm border border-border hover:border-primary transition-all duration-300 cursor-pointer hover:shadow-xl h-full overflow-hidden">
+        
+        {/* Image Mosaic Overlay */}
+        {hasImages && (
+          <div
+            className={`absolute inset-0 z-10 transition-all duration-500 ${
+              isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-0.5">
+              {images.slice(0, 4).map((image, index) => (
+                <div
+                  key={image.id}
+                  className="relative overflow-hidden"
+                  style={{ transitionDelay: `${index * 50}ms` }}
+                >
+                  <OptimizedImage
+                    src={image.image_url}
+                    alt=""
+                    className={`transition-transform duration-700 ${
+                      isHovered ? "scale-100" : "scale-110"
+                    }`}
+                  />
+                </div>
+              ))}
+              
+              {images.length < 4 &&
+                Array.from({ length: 4 - images.length }).map((_, i) => (
+                  <div key={`empty-${i}`} className="bg-accent/50" />
+                ))}
+            </div>
 
-          {/* Header */}
-          <div className="mb-12">
-            <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
-              Destination
-            </p>
-            <h1 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-4">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
+              <h3 className="font-display text-xl font-semibold text-white">
+                {destination.name}
+              </h3>
+            </div>
+          </div>
+        )}
+
+        {/* Default Content */}
+        <div
+          className={`flex flex-col items-center text-center gap-4 transition-opacity duration-300 ${
+            isHovered && hasImages ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center flex-shrink-0 group-hover:bg-primary transition-colors">
+            <MapPin className="w-5 h-5 text-foreground group-hover:text-primary-foreground transition-colors" />
+          </div>
+          <div>
+            <h3 className="font-display text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
               {destination.name}
-            </h1>
-            <p className="text-xl text-primary font-medium mb-2">
-              {destination.short_description}
+            </h3>
+            <p className="text-primary text-sm font-medium mb-2">
+              {destination.description}
             </p>
-            <p className="text-xl text-cyan-500 font-medium italic">
+            <p className="text-muted-foreground text-sm">
               {destination.tagline}
             </p>
           </div>
-
-          {/* Image Gallery */}
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-2xl font-semibold text-foreground">
-                Image Gallery
-              </h2>
-              {user && (
-                <>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                  />
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadImage.isPending}
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {uploadImage.isPending ? "Uploading..." : "Upload Images"}
-                  </Button>
-                </>
-              )}
-            </div>
-
-            {images.length > 0 ? (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext items={images.map((img) => img.id)} strategy={rectSortingStrategy}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {images.map((image) => (
-                      <SortableImage
-                        key={image.id}
-                        image={image}
-                        destinationName={destination.name}
-                        canEdit={!!user}
-                        onDelete={(id) => deleteImage.mutate(id)}
-                        onClick={() => {
-                          setLightboxIndex(images.findIndex((img) => img.id === image.id));
-                          setLightboxOpen(true);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            ) : (
-              <div className="bg-card border border-border rounded-sm p-12 text-center flex flex-col items-center gap-4">
-                <p className="text-muted-foreground">
-                  No images available for this destination yet.
-                </p>
-                {user && (
-                  <Button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadImage.isPending}
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    {uploadImage.isPending ? "Uploading..." : "Upload Images"}
-                  </Button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Description */}
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-2xl font-semibold text-foreground">
-                About This Destination
-              </h2>
-              {user && !isEditing && (
-                <Button variant="outline" onClick={handleStartEditing}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Description
-                </Button>
-              )}
-            </div>
-
-            {isEditing ? (
-              <div className="space-y-4">
-                <Textarea
-                  value={editedDescription}
-                  onChange={(e) => setEditedDescription(e.target.value)}
-                  placeholder="Enter a detailed description of the destination..."
-                  className="min-h-[200px]"
-                />
-                <div className="flex gap-2">
-                  <Button onClick={handleSaveDescription} disabled={updateDescription.isPending}>
-                    <Save className="w-4 h-4 mr-2" />
-                    {updateDescription.isPending ? "Saving..." : "Save"}
-                  </Button>
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    <X className="w-4 h-4 mr-2" />
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="prose prose-lg max-w-none">
-                {destination.full_description ? (
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                    {destination.full_description}
-                  </p>
-                ) : (
-                  <p className="text-muted-foreground italic">
-                    {user
-                      ? "No description added yet. Click the button above to edit."
-                      : "Description for this destination coming soon."}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
         </div>
-      </section>
-
-      <Footer />
-
-      {/* Lightbox Dialog */}
-      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
-          <div className="relative flex items-center justify-center min-h-[80vh]">
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={() => setLightboxIndex((prev) => (prev - 1 + images.length) % images.length)}
-                  className="absolute left-4 p-2 bg-background/20 hover:bg-background/40 text-white rounded-full transition-colors z-10"
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={() => setLightboxIndex((prev) => (prev + 1) % images.length)}
-                  className="absolute right-4 p-2 bg-background/20 hover:bg-background/40 text-white rounded-full transition-colors z-10"
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </button>
-              </>
-            )}
-            {images[lightboxIndex] && (
-              <img
-                src={images[lightboxIndex].image_url}
-                alt={destination.name}
-                className="max-w-full max-h-[85vh] object-contain"
-              />
-            )}
-            {images.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
-                {lightboxIndex + 1} / {images.length}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-    </main>
+      </article>
+    </Link>
   );
 };
 
-export default DestinationDetail;
+const DestinationsSection = () => {
+  return (
+    <section id="destinations" className="py-24 px-6 bg-card">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
+            Destinations
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-semibold text-foreground leading-tight mb-6">
+            Paradise Awaits in Every{" "}
+            <span className="italic font-normal">Corner</span>
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Explore our handpicked destinations where dreams come alive – click on a destination to see photos
+          </p>
+          <div className="flex justify-center mt-6">
+            <ChevronDown className="w-8 h-8 text-primary animate-bounce" />
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {destinations.map((destination) => (
+            <DestinationCard key={destination.slug} destination={destination} />
+          ))}
+        </div>
+
+        <p className="text-center text-muted-foreground mt-12 text-sm">
+          Click on a destination for more details and image gallery
+        </p>
+      </div>
+    </section>
+  );
+};
+
+export default DestinationsSection;
