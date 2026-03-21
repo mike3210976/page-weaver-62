@@ -1,10 +1,4 @@
-To je zadnji, a morda najbolj kritičen del za hitrost tvoje strani. ServiceUploadDialog namreč odpira galerijo slik, ki jih naložiš preko Supabase. Če tam naložiš 20 slik neposredno s telefona (ki so velike po 5–10 MB), bo galerija na mobilnih napravah popolnoma zmrznila.
 
-V kodi sem optimiziral SortableImage in Lightbox, da uporabljata Supabase-ovo vgrajeno optimizacijo slik.
-
-Zamenjaj celotno vsebino datoteke ServiceUploadDialog.tsx s temle:
-
-TypeScript
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
