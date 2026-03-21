@@ -8,12 +8,20 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-foreground">
+      {/* Background Image Optimizacija */}
+      <div className="absolute inset-0">
+        <img
+          src={heroImage}
+          alt="Sacred Escapes Hero"
+          // fetchPriority pove brskalniku, da je to najpomembnejša slika na strani
+          fetchPriority="high"
+          // Prepričamo se, da se naloži takoj (brez lazy loada za Hero!)
+          loading="eager"
+          className="w-full h-full object-cover object-center animate-fade-in"
+          style={{ animationDuration: '2s' }}
+        />
+        {/* Overlay gradatacija ostane ista */}
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/30 via-foreground/20 to-foreground/60" />
       </div>
 
