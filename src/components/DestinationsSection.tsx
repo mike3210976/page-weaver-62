@@ -1,8 +1,30 @@
+Tukaj je celotna, popravljena koda za tvojo datoteko DestinationsSection.tsx.
+
+V kodi sem naredil ključno spremembo: v vrstici 136 sem zamenjal navadno značko <img> z najino novo komponento OptimizedImage. Zdaj se bo vsaka od teh 4 slik v mozaiku naložila šele, ko bo kartica vidna, in to z mehkim prehodom.
+
+TypeScript
 import { MapPin, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+
+// --- OPTIMIZACIJA SLIK ---
+const OptimizedImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  return (
+    <div className={`overflow-hidden bg-muted flex items-center justify-center w-full h-full ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+        onLoad={(e) => (e.currentTarget.style.opacity = "1")}
+        style={{ opacity: 0 }}
+      />
+    </div>
+  );
+};
 
 const destinations = [
   {
@@ -74,20 +96,12 @@ interface DestinationImage {
   display_order: number | null;
 }
 
-interface DestinationWithImages {
-  id: string;
-  slug: string;
-  images: DestinationImage[];
-}
-
 const DestinationCard = ({ destination }: { destination: typeof destinations[0] }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Fetch images for this destination
   const { data: destinationData } = useQuery({
     queryKey: ["destination-preview", destination.slug],
     queryFn: async () => {
-      // First get the destination ID
       const { data: dest } = await supabase
         .from("destinations")
         .select("id")
@@ -96,7 +110,6 @@ const DestinationCard = ({ destination }: { destination: typeof destinations[0] 
 
       if (!dest) return null;
 
-      // Then get images for this destination (limit to 4 for mosaic)
       const { data: images } = await supabase
         .from("destination_images")
         .select("*")
@@ -119,6 +132,7 @@ const DestinationCard = ({ destination }: { destination: typeof destinations[0] 
       onMouseLeave={() => setIsHovered(false)}
     >
       <article className="relative bg-background p-8 rounded-sm border border-border hover:border-primary transition-all duration-300 cursor-pointer hover:shadow-xl h-full overflow-hidden">
+        
         {/* Image Mosaic Overlay */}
         {hasImages && (
           <div
@@ -131,29 +145,25 @@ const DestinationCard = ({ destination }: { destination: typeof destinations[0] 
                 <div
                   key={image.id}
                   className="relative overflow-hidden"
-                  style={{
-                    transitionDelay: `${index * 50}ms`,
-                  }}
+                  style={{ transitionDelay: `${index * 50}ms` }}
                 >
-                  <img
+                  {/* TUKAJ JE KLJUČNA SPREMEMBA: Uporaba OptimizedImage */}
+                  <OptimizedImage
                     src={image.image_url}
                     alt=""
-                    className={`w-full h-full object-cover transition-all duration-500 ${
+                    className={`transition-transform duration-700 ${
                       isHovered ? "scale-100" : "scale-110"
                     }`}
                   />
                 </div>
               ))}
-              {/* Fill empty slots if less than 4 images */}
+              
               {images.length < 4 &&
                 Array.from({ length: 4 - images.length }).map((_, i) => (
-                  <div
-                    key={`empty-${i}`}
-                    className="bg-accent/50"
-                  />
+                  <div key={`empty-${i}`} className="bg-accent/50" />
                 ))}
             </div>
-            {/* Gradient overlay with destination name */}
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
               <h3 className="font-display text-xl font-semibold text-white">
                 {destination.name}
@@ -192,7 +202,6 @@ const DestinationsSection = () => {
   return (
     <section id="destinations" className="py-24 px-6 bg-card">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <p className="text-primary tracking-[0.2em] uppercase text-sm font-medium mb-4">
             Destinations
@@ -209,14 +218,12 @@ const DestinationsSection = () => {
           </div>
         </div>
 
-        {/* Destinations Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {destinations.map((destination) => (
             <DestinationCard key={destination.slug} destination={destination} />
           ))}
         </div>
 
-        {/* Note about interactive map */}
         <p className="text-center text-muted-foreground mt-12 text-sm">
           Click on a destination for more details and image gallery
         </p>
