@@ -4,23 +4,33 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
-// --- OPTIMIZACIJA SLIK ---
-const OptimizedImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+const OptimizedImage = ({ src, alt, className }: { src: string | null; alt: string; className?: string }) => {
+  // Če je slika na Supabase, ji dodava parametre za hitrejše nalaganje na mobilnikih
+  const isSupabase = src?.includes('supabase.co');
+  const mobileSrc = isSupabase ? `${src}?width=600&quality=70` : src;
+  const desktopSrc = src || "";
+
   return (
     <div className={`overflow-hidden bg-muted flex items-center justify-center w-full h-full ${className}`}>
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
-        className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
-        onLoad={(e) => (e.currentTarget.style.opacity = "1")}
-        style={{ opacity: 0 }}
-      />
+      <picture className="w-full h-full">
+        {/* Mobilniki (do 768px) naložijo 5x manjšo sliko */}
+        <source media="(max-width: 768px)" srcSet={mobileSrc || ""} />
+        {/* Računalniki naložijo polno kvaliteto */}
+        <img
+          src={desktopSrc}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+          onLoad={(e) => {
+            (e.currentTarget as HTMLImageElement).style.opacity = "1";
+          }}
+          style={{ opacity: 0 }}
+        />
+      </picture>
     </div>
   );
 };
-
 const destinations = [
   {
     name: "Maldives",
