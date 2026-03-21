@@ -4,6 +4,25 @@ import bartenderImage from "@/assets/bartender-cocktail.jpg";
 import beachSunsetImage from "@/assets/beach-sunset.jpg";
 import familyOceanImage from "@/assets/family-ocean.jpg";
 
+// --- OPTIMIZACIJA ZA HITRO NALAGANJE KOLAŽA ---
+const OptimizedImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+  return (
+    <div className={`overflow-hidden bg-muted w-full h-full ${className}`}>
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+        onLoad={(e) => {
+          (e.currentTarget as HTMLImageElement).style.opacity = "1";
+        }}
+        style={{ opacity: 0 }}
+      />
+    </div>
+  );
+};
+
 const AboutSection = () => {
   return (
     <section id="about" className="py-24 px-6 bg-card">
@@ -47,48 +66,48 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* Image Collage - 6 images in creative grid */}
+          {/* Image Collage - Optimiziran mrežni prikaz */}
           <div className="relative">
             <div className="grid grid-cols-3 gap-3 h-[550px]">
               {/* Left column - 1 tall image */}
-              <div className="relative overflow-hidden rounded-sm shadow-xl">
-                <img
+              <div className="relative rounded-sm shadow-xl">
+                <OptimizedImage
                   src={bartenderImage}
                   alt="Caribbean hospitality"
-                  className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                  className="hover:scale-105 transition-transform duration-500"
                 />
               </div>
 
               {/* Middle column - 1 tall image */}
-              <div className="relative overflow-hidden rounded-sm shadow-xl">
-                <img
+              <div className="relative rounded-sm shadow-xl">
+                <OptimizedImage
                   src={spiritualRetreatImage}
                   alt="Spiritual retreat at cenote"
-                  className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                  className="hover:scale-105 transition-transform duration-500"
                 />
               </div>
 
               {/* Right column - 3 stacked images */}
               <div className="flex flex-col gap-3">
-                <div className="relative flex-[1.2] overflow-hidden rounded-sm shadow-xl">
-                  <img
+                <div className="relative flex-[1.2] rounded-sm shadow-xl">
+                  <OptimizedImage
                     src={familyOceanImage}
                     alt="Family moments in crystal clear waters"
-                    className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                    className="hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="relative flex-1 overflow-hidden rounded-sm shadow-xl">
-                  <img
+                <div className="relative flex-1 rounded-sm shadow-xl">
+                  <OptimizedImage
                     src={beachSunsetImage}
                     alt="Beautiful beach sunset"
-                    className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                    className="hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="relative flex-[1.2] overflow-hidden rounded-sm shadow-xl">
-                  <img
+                <div className="relative flex-[1.2] rounded-sm shadow-xl">
+                  <OptimizedImage
                     src={romanticEscapeImage}
                     alt="Romantic beach escape in Dominican Republic"
-                    className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                    className="hover:scale-105 transition-transform duration-500"
                   />
                 </div>
               </div>
