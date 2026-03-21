@@ -5,10 +5,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 const OptimizedImage = ({ src, alt, className }: { src: string | null; alt: string; className?: string }) => {
-  // Če je slika na Supabase, ji dodava parametre za hitrejše nalaganje na mobilnikih
   const isSupabase = src?.includes('supabase.co');
-  const mobileSrc = isSupabase ? `${src}?width=600&quality=70` : src;
-  const desktopSrc = src || "";
+  
+  // Za mozaik (ki je majhen) naloživa ekstremno majhne slike
+  // width=400 je več kot dovolj, quality=60 pa drastično zmanjša velikost brez vidne izgube
+  const mobileSrc = isSupabase ? `${src}?width=400&quality=60&format=webp` : src;
+  const desktopSrc = isSupabase ? `${src}?width=600&quality=70&format=webp` : src;
+
+  return (
+    <div className={`overflow-hidden bg-muted flex items-center justify-center w-full h-full ${className}`}>
+      <picture className="w-full h-full">
+        <source media="(max-width: 768px)" srcSet={mobileSrc || ""} />
+        <img
+          src={desktopSrc || ""}
+          alt={alt}
+          loading="lazy" // Zelo pomembno: slike se naložijo šele, ko pridejo blizu zaslona
+          decoding="async"
+          className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+          onLoad={(e) => {
+            (e.currentTarget as HTMLImageElement).style.opacity = "1";
+          }}
+          style={{ opacity: 0 }}
+        />
+      </picture>
+    </div>
+  );
+};
 
   return (
     <div className={`overflow-hidden bg-muted flex items-center justify-center w-full h-full ${className}`}>
